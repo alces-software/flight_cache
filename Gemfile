@@ -4,3 +4,5 @@ source "https://rubygems.org"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
+gem 'commander', git: 'https://github.com/alces-software/commander'
+
