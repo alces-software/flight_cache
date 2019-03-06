@@ -25,14 +25,21 @@
 # ==============================================================================
 #
 
+# Require Dummy rack module (So it can define the constants)
+require 'rack'
+
 # ActiveSupport Modules
 require 'active_support/concern'
 require 'active_support/dependencies/autoload'
+require 'active_support/core_ext/class/attribute_accessors'
 
 # Rails routing library
 require 'action_dispatch/routing'
 require 'action_dispatch/http/mime_type'
 require 'action_dispatch/http/content_security_policy'
+
+# Require the parameters from active_controller
+require 'action_controller/metal/strong_parameters'
 
 module FlightCache
   class RoutesSet < SimpleDelegator
@@ -61,5 +68,4 @@ module FlightCache
     end
   end
 end
-
 

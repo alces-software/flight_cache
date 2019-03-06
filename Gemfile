@@ -31,6 +31,15 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'commander', github: 'alces-software/commander'
 
+# Skip the unused dependencies by using the dummy versions
+path 'opt' do
+  gem 'actionview'
+  gem 'rack'
+  gem 'rack-test'
+  gem 'rails-dom-testing'
+  gem 'rails-html-sanitizer'
+end
+
 group :development do
   gem 'pry'
   gem 'pry-byebug'
