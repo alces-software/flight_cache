@@ -25,25 +25,20 @@
 # ==============================================================================
 #
 
-require 'commander'
+task :setup do
+  $LOAD_PATH << File.join(__dir__, 'lib')
+  ENV['BUNDLE_GEMFILE'] ||= File.join(__dir__, 'Gemfile')
 
-require 'flight_cache/client'
+  require 'rubygems'
+  require 'bundler/setup'
 
-class FlightCacheCli
-  extend Commander::UI
-  extend Commander::UI::AskForClass
-  extend Commander::Delegates
+  require 'flight_cache_cli'
+end
 
-  program :name,        'flight-cache'
-  program :version,     '0.0.0'
-  program :description, 'TBD'
-  program :help_paging, false
+task console: :setup do
+  require 'pry'
+  require 'pry-byebug'
 
-  silent_trace!
-
-  def self.run!
-    ARGV.push '--help' if ARGV.empty?
-    super
-  end
+  Pry::REPL.start({})
 end
 

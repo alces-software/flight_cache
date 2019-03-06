@@ -25,25 +25,15 @@
 # ==============================================================================
 #
 
-require 'commander'
-
-require 'flight_cache/client'
-
-class FlightCacheCli
-  extend Commander::UI
-  extend Commander::UI::AskForClass
-  extend Commander::Delegates
-
-  program :name,        'flight-cache'
-  program :version,     '0.0.0'
-  program :description, 'TBD'
-  program :help_paging, false
-
-  silent_trace!
-
-  def self.run!
-    ARGV.push '--help' if ARGV.empty?
-    super
+module FlightCache
+  Client = Struct.new(:base, :token) do
+    def join(*parts, **params)
+      params[:flight_sso_token] = token
+      param_parts = params.map do |key, value|
+        "#{key}=#{value}"
+      end
+      path = File.join(base, *parts)
+      "#{path}?#{param_parts.join(',')}"
+    end
   end
 end
-
