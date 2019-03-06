@@ -25,17 +25,20 @@
 # ==============================================================================
 #
 
-source "https://rubygems.org"
+require 'action_dispatch'
 
-git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+module FlightCache
+  class Routes < SimpleDelegator
+    CONFIG = File.expand_path(
+      File.join(__dir__, '../../opt/flight-cache-server/config/routes.rb')
+    )
 
-gem 'commander', github: 'alces-software/commander'
-
-group :development do
-  gem 'pry'
-  gem 'pry-byebug'
+    def self.new
+      $global_routes = ActionDispatch::Routing::RouteSet.new
+      load(CONFIG)
+      super($global_routes)
+    end
+  end
 end
 
 
-# Added at 2019-03-06 15:26:52 +0000 by william:
-gem "actionpack", "~> 5.2"

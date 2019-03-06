@@ -39,6 +39,6 @@ task console: :setup do
   require 'pry'
   require 'pry-byebug'
 
-  Pry::REPL.start({})
+  binding.pry
 end
 
