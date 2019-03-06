@@ -28,6 +28,7 @@
 require 'commander'
 
 require 'flight_cache/client'
+require 'flight_cache/routes_set'
 
 class FlightCacheCli
   extend Commander::UI

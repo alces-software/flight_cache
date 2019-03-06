@@ -25,10 +25,17 @@
 # ==============================================================================
 #
 
-require 'action_dispatch'
+# ActiveSupport Modules
+require 'active_support/concern'
+require 'active_support/dependencies/autoload'
+
+# Rails routing library
+require 'action_dispatch/routing'
+require 'action_dispatch/http/mime_type'
+require 'action_dispatch/http/content_security_policy'
 
 module FlightCache
-  class Routes < SimpleDelegator
+  class RoutesSet < SimpleDelegator
     CONFIG = File.expand_path(
       File.join(__dir__, '../../opt/flight-cache-server/config/routes.rb')
     )
@@ -37,6 +44,20 @@ module FlightCache
       $global_routes = ActionDispatch::Routing::RouteSet.new
       load(CONFIG)
       super($global_routes)
+    end
+
+    def sso_urls
+      @sso_urls ||= SSOUrls.new(self)
+    end
+
+    SSOUrls = Struct.new(:rs) do
+      def initialize(_h)
+        super
+        rs.routes.map { |r| :"#{r.name}_url" }.each do |s|
+          next unless rs.url_helpers.respond_to?(s)
+          define_singleton_method(s) { |*a| rs.url_helpers.public_send(s, *a) }
+        end
+      end
     end
   end
 end
