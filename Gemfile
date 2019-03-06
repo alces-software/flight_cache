@@ -6,3 +6,8 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'commander', github: 'alces-software/commander'
 
+group :development do
+  gem 'pry'
+  gem 'pry-byebug'
+end
+
