@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 #
@@ -26,15 +25,23 @@
 # ==============================================================================
 #
 
-root_dir = File.expand_path(File.join(__dir__, '..'))
-$LOAD_PATH << File.join(root_dir, 'lib')
+require 'commander'
 
-ENV['BUNDLE_GEMFILE'] ||= File.join(root_dir, 'Gemfile')
+class FlightCacheCli
+  extend Commander::UI
+  extend Commander::UI::AskForClass
+  extend Commander::Delegates
 
-require 'rubygems'
-require 'bundler/setup'
+  program :name,        'flight-cache'
+  program :version,     '0.0.0'
+  program :description, 'TBD'
+  program :help_paging, false
 
-require 'flight_cache_cli'
+  silent_trace!
 
-FlightCacheCli.run! if $PROGRAM_NAME == __FILE__
+  def self.run!
+    ARGV.push '--help' if ARGV.empty?
+    super
+  end
+end
 
