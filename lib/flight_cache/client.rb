@@ -25,16 +25,8 @@
 # ==============================================================================
 #
 
-require 'flight_cache/routes_set'
-
 module FlightCache
   Client = Struct.new(:host, :token) do
-    def urls
-      @urls ||= FlightCache::RoutesSet.new.app_urls(
-        host: host, flight_sso_token: token
-      )
-    end
-
     def host
       (v = self[:host]).blank? ? (raise 'No host given') : v
     end
