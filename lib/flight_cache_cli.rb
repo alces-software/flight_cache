@@ -87,5 +87,14 @@ class FlightCacheCli
       puts client.urls.tag_blobs_url tag: tag
     end
   end
+
+  command :'url:upload' do |c|
+    c.syntax = 'url:upload CONTAINER_ID FILENAME'
+    c.description = 'Gives the url to upload a file'
+    c.summary = 'POST the content of the file to this address'
+    act(c) do |id, name|
+      puts client.urls.container_url(id: id).sub('?', "/upload/#{name}?")
+    end
+  end
 end
 
