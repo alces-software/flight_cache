@@ -53,18 +53,17 @@ module FlightCache
       super($global_routes)
     end
 
-    def app_urls(token)
-      UrlBuilder.new(self, token)
+    def app_urls(**params)
+      UrlBuilder.new(self, params)
     end
 
-    UrlBuilder = Struct.new(:app, :token) do
+    UrlBuilder = Struct.new(:app, :other_params) do
       def initialize(*_a)
         super
         app.routes.map { |r| :"#{r.name}_url" }.each do |s|
           next unless app.url_helpers.respond_to?(s)
           define_singleton_method(s) do |*a, **params|
-            params[:flight_sso_token] = token
-            app.url_helpers.public_send(s, *a, params)
+            app.url_helpers.public_send(s, *a, params.merge(other_params))
           end
         end
       end

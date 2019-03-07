@@ -25,15 +25,20 @@
 # ==============================================================================
 #
 
+require 'flight_cache/routes_set'
+
 module FlightCache
-  Client = Struct.new(:base, :token) do
-    def join(*parts, **params)
-      params[:flight_sso_token] = token
-      param_parts = params.map do |key, value|
-        "#{key}=#{value}"
-      end
-      path = File.join(base, *parts)
-      "#{path}?#{param_parts.join(',')}"
+  Client = Struct.new(:host, :token) do
+    def urls
+      @urls ||= FlightCache::RoutesSet.new.app_urls(host: host, token: token)
+    end
+
+    def host
+      (v = @host).blank? ? (raise 'No host given') : v
+    end
+
+    def token
+      (v = @token).blank? ? (raise 'No token given'): v
     end
   end
 end
