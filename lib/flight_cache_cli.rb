@@ -46,5 +46,19 @@ class FlightCacheCli
     ARGV.push '--help' if ARGV.empty?
     super
   end
+
+  def self.act(command)
+    command.action do |args, opts|
+      yield(*args, opts.to_h)
+    end
+  end
+
+  command :download do |c|
+    c.syntax = 'download ID'
+    c.description = 'Downloads the given blob by id'
+    act(c) do |id|
+      puts id
+    end
+  end
 end
 
