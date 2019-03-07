@@ -52,11 +52,39 @@ class FlightCacheCli
     end
   end
 
-  command :download do |c|
-    c.syntax = 'download ID'
-    c.description = 'Downloads the given blob by id'
+  def self.client
+    FlightCache::Client.new(ENV['FLIGHT_CACHE_HOST'], ENV['FLIGHT_SSO_TOKEN'])
+  end
+
+  command :'url:download' do |c|
+    c.syntax = 'url:download ID'
+    c.description = 'Gives the url to download a blob'
     act(c) do |id|
-      puts id
+      puts client.urls.download_blob_url id: id
+    end
+  end
+
+  command :'url:container' do |c|
+    c.syntax = 'url:container ID'
+    c.description = 'Gives the url to a particular container'
+    act(c) do |id|
+      puts client.urls.container_url id: id
+    end
+  end
+
+  command :'url:blob' do |c|
+    c.syntax = 'url:blob ID'
+    c.description = 'Gives the url to a particular blob'
+    act(c) do |id|
+      puts client.urls.blob_url id: id
+    end
+  end
+
+  command :'url:tag:blobs' do |c|
+    c.syntax = 'url:tag:blobs TAG'
+    c.description = 'Gives the url to blobs of this tag'
+    act(c) do |tag|
+      puts client.urls.tag_blobs_url tag: tag
     end
   end
 end
