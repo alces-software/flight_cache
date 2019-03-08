@@ -25,16 +25,15 @@
 # ==============================================================================
 #
 
-source "https://rubygems.org"
+require 'faraday'
 
-git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
-
-gem 'commander', github: 'alces-software/commander'
-
-group :development do
-  gem 'pry'
-  gem 'pry-byebug'
+module FlightCache
+  class Connection < DelegateClass(Faraday::Connection)
+    def initialize(host:, token:)
+      super(Faraday::Connection.new(host)).tap do |conn|
+        conn.token_auth(token)
+        yield conn if block_given?
+      end
+    end
+  end
 end
-
-gem "faraday", "~> 0.15.4"
-
