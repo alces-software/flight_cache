@@ -28,6 +28,7 @@
 require 'commander'
 
 require 'flight_cache/client'
+require 'pp'
 
 class FlightCacheCli
   extend Commander::UI
@@ -64,11 +65,11 @@ class FlightCacheCli
     end
   end
 
-  command :'url:container' do |c|
-    c.syntax = 'url:container ID'
-    c.description = 'Gives the url to a particular container'
+  command :'container' do |c|
+    c.syntax = 'container ID'
+    c.description = 'Get the metedata for a particular container'
     act(c) do |id|
-      puts client.urls.container_url id: id
+      pp client.connection.get_container_id(id).body
     end
   end
 
@@ -80,11 +81,11 @@ class FlightCacheCli
     end
   end
 
-  command :'url:tag:blobs' do |c|
-    c.syntax = 'url:tag:blobs TAG'
-    c.description = 'Gives the url to blobs of this tag'
+  command :'tag:blobs' do |c|
+    c.syntax = 'tag:blobs TAG'
+    c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      puts client.urls.tag_blobs_url tag: tag
+      pp client.connection.get_tag_blobs(tag).body
     end
   end
 

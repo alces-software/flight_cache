@@ -46,5 +46,17 @@ module FlightCache
     def get_blob_id(id)
       get("/blobs/#{id}")
     end
+
+    def get_container_id(id)
+      get("/containers/#{id}")
+    end
+
+    def get_tag_path(tag, *path)
+      get(File.join("/tags", tag, *path))
+    end
+
+    def get_tag_blobs(tag)
+      get_tag_path(tag, 'blobs')
+    end
   end
 end
