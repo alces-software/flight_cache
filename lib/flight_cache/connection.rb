@@ -42,5 +42,9 @@ module FlightCache
       end
       super(faraday)
     end
+
+    def get_blob_id(id)
+      get("/blobs/#{id}")
+    end
   end
 end

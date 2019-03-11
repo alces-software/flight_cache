@@ -72,11 +72,11 @@ class FlightCacheCli
     end
   end
 
-  command :'url:blob' do |c|
-    c.syntax = 'url:blob ID'
-    c.description = 'Gives the url to a particular blob'
+  command :'blob' do |c|
+    c.syntax = 'blob ID'
+    c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
-      puts client.urls.blob_url id: id
+      pp client.connection.get_blob_id(id).body
     end
   end
 
