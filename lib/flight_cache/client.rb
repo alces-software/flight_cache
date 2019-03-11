@@ -25,14 +25,20 @@
 # ==============================================================================
 #
 
+require 'flight_cache/connection'
+
 module FlightCache
   Client = Struct.new(:host, :token) do
     def host
-      (v = self[:host]).blank? ? (raise 'No host given') : v
+      (v = self[:host]).to_s.empty? ? (raise 'No host given') : v
     end
 
     def token
-      (v = self[:token]).blank? ? (raise 'No token given'): v
+      (v = self[:token]).to_s.empty? ? (raise 'No token given'): v
+    end
+
+    def connection
+      Connection.new(host: host, token: token)
     end
   end
 end

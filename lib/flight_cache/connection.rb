@@ -25,15 +25,22 @@
 # ==============================================================================
 #
 
-require 'faraday'
+require 'faraday_middleware'
+require 'hashie'
 
 module FlightCache
   class Connection < DelegateClass(Faraday::Connection)
     def initialize(host:, token:)
-      super(Faraday::Connection.new(host)).tap do |conn|
+      faraday = Faraday::Connection.new(host) do |conn|
         conn.token_auth(token)
-        yield conn if block_given?
+        conn.request :json
+
+        conn.use FaradayMiddleware::Mashify
+        conn.response :json, :content_type => /\bjson$/
+
+        conn.adapter Faraday.default_adapter
       end
+      super(faraday)
     end
   end
 end
