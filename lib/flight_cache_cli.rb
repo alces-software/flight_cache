@@ -57,7 +57,7 @@ class FlightCacheCli
     FlightCache::Client.new(ENV['FLIGHT_CACHE_HOST'], ENV['FLIGHT_SSO_TOKEN'])
   end
 
-  command :'download' do |c|
+  command :download do |c|
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
@@ -65,7 +65,7 @@ class FlightCacheCli
     end
   end
 
-  command :'container' do |c|
+  command :container do |c|
     c.syntax = 'container ID'
     c.description = 'Get the metedata for a particular container'
     act(c) do |id|
@@ -73,7 +73,7 @@ class FlightCacheCli
     end
   end
 
-  command :'blob' do |c|
+  command :blob do |c|
     c.syntax = 'blob ID'
     c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
@@ -89,12 +89,13 @@ class FlightCacheCli
     end
   end
 
-  command :'url:upload' do |c|
-    c.syntax = 'url:upload CONTAINER_ID FILENAME'
-    c.description = 'Gives the url to upload a file'
-    c.summary = 'POST the content of the file to this address'
-    act(c) do |id, name|
-      puts client.urls.container_url(id: id).sub('?', "/upload/#{name}?")
+  command :upload do |c|
+    c.syntax = 'upload CONTAINER_ID FILEPATH'
+    c.description = 'Upload the file to the container'
+    act(c) do |id, filepath|
+      io = File.open(filepath, 'r')
+      name = File.basename(filepath)
+      pp client.connection.upload_container_id(id, name, io).body
     end
   end
 end

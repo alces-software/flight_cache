@@ -53,7 +53,14 @@ module FlightCache
     end
 
     def get_container_id(id)
-      get("/containers/#{id}")
+      get(container_path(id))
+    end
+
+    def upload_container_id(id, name, io)
+      upload_path = container_path(id, 'upload', name)
+      post(upload_path, io.read) do |req|
+        req.headers['Content-Type'] = 'application/octet-stream'
+      end
     end
 
     def get_tag_path(tag, *path)
@@ -62,6 +69,12 @@ module FlightCache
 
     def get_tag_blobs(tag)
       get_tag_path(tag, 'blobs')
+    end
+
+    private
+
+    def container_path(id, *path)
+      File.join('/containers', id, *path)
     end
   end
 end
