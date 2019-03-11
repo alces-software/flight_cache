@@ -57,11 +57,11 @@ class FlightCacheCli
     FlightCache::Client.new(ENV['FLIGHT_CACHE_HOST'], ENV['FLIGHT_SSO_TOKEN'])
   end
 
-  command :'url:download' do |c|
-    c.syntax = 'url:download ID'
-    c.description = 'Gives the url to download a blob'
+  command :'download' do |c|
+    c.syntax = 'download ID'
+    c.description = 'Download the blob by id'
     act(c) do |id|
-      puts client.urls.download_blob_url id: id
+      puts client.connection.download_blob_id(id).body
     end
   end
 

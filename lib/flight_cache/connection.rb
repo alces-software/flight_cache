@@ -35,6 +35,7 @@ module FlightCache
         conn.token_auth(token)
         conn.request :json
 
+        conn.use FaradayMiddleware::FollowRedirects
         conn.use FaradayMiddleware::Mashify
         conn.response :json, :content_type => /\bjson$/
 
@@ -45,6 +46,10 @@ module FlightCache
 
     def get_blob_id(id)
       get("/blobs/#{id}")
+    end
+
+    def download_blob_id(id)
+      get("/blobs/#{id}/download")
     end
 
     def get_container_id(id)
