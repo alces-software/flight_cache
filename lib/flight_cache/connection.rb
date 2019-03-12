@@ -44,31 +44,27 @@ module FlightCache
       super(faraday)
     end
 
-    def get_blob_id(id)
+    def get_blob_by_id(id)
       get("/blobs/#{id}")
     end
 
-    def download_blob_id(id)
+    def download_blob_by_id(id)
       get("/blobs/#{id}/download")
     end
 
-    def get_container_id(id)
+    def get_container_by_id(id)
       get(container_path(id))
     end
 
-    def upload_container_id(id, name, io)
+    def upload_to_container_id(id, name, io)
       upload_path = container_path(id, 'upload', name)
       post(upload_path, io.read) do |req|
         req.headers['Content-Type'] = 'application/octet-stream'
       end
     end
 
-    def get_tag_path(tag, *path)
-      get(File.join("/tags", tag, *path))
-    end
-
-    def get_tag_blobs(tag)
-      get_tag_path(tag, 'blobs')
+    def get_blobs_by_tag(tag)
+      get(File.join("/tags/#{tag}/blobs"))
     end
 
     private

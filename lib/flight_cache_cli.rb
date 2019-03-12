@@ -61,7 +61,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      puts client.connection.download_blob_id(id).body
+      puts client.connection.download_blob_by_id(id).body
     end
   end
 
@@ -69,7 +69,7 @@ class FlightCacheCli
     c.syntax = 'container ID'
     c.description = 'Get the metedata for a particular container'
     act(c) do |id|
-      pp client.connection.get_container_id(id).body
+      pp client.connection.get_container_by_id(id).body
     end
   end
 
@@ -77,7 +77,7 @@ class FlightCacheCli
     c.syntax = 'blob ID'
     c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
-      pp client.connection.get_blob_id(id).body
+      pp client.connection.get_blob_by_id(id).body
     end
   end
 
@@ -85,7 +85,7 @@ class FlightCacheCli
     c.syntax = 'tag:blobs TAG'
     c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      pp client.connection.get_tag_blobs(tag).body
+      pp client.connection.get_blobs_by_tag(tag).body
     end
   end
 
@@ -95,7 +95,7 @@ class FlightCacheCli
     act(c) do |id, filepath|
       io = File.open(filepath, 'r')
       name = File.basename(filepath)
-      pp client.connection.upload_container_id(id, name, io).body
+      pp client.connection.upload_to_container_id(id, name, io).body
     end
   end
 end
