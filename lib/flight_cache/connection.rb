@@ -26,10 +26,23 @@
 #
 
 require 'faraday_middleware'
+require 'flight_cache/error'
 require 'hashie'
 
 module FlightCache
   class Connection < DelegateClass(Faraday::Connection)
+    class RaiseError < Faraday::Response::RaiseError
+      def on_complete(env)
+        case[:env]
+        when false
+        else
+          super
+        end
+      rescue Faraday::Error => e
+        raise FlightCache::Error, "#{e.class}: #{e.message}"
+      end
+    end
+
     def initialize(host:, token:)
       faraday = Faraday::Connection.new(host) do |conn|
         conn.token_auth(token)
@@ -38,10 +51,9 @@ module FlightCache
         conn.use FaradayMiddleware::FollowRedirects
         conn.use FaradayMiddleware::Mashify
         conn.response :json, :content_type => /\bjson$/
-        conn.response :raise_error
+        conn.use RaiseError
 
-        conn.adapter Faraday.default_adapter
-      end
+        conn.adapter Faraday.default_adapter end
       super(faraday)
     end
 
