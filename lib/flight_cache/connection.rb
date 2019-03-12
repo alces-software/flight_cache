@@ -31,15 +31,14 @@ require 'hashie'
 
 module FlightCache
   class Connection < DelegateClass(Faraday::Connection)
-    class RaiseError < Faraday::Response::RaiseError
-      def on_complete(env)
-        case[:env]
-        when false
-        else
-          super
+    class RaiseError < Faraday::Middleware
+      def call(req)
+        @app.call(req).on_complete do |res|
+          case res.status
+          when 401
+            raise UnauthorizedError, res.body.error
+          end
         end
-      rescue Faraday::Error => e
-        raise FlightCache::Error, "#{e.class}: #{e.message}"
       end
     end
 
@@ -49,9 +48,12 @@ module FlightCache
         conn.request :json
 
         conn.use FaradayMiddleware::FollowRedirects
+
+        conn.response :raise_error
+        conn.use RaiseError
+
         conn.use FaradayMiddleware::Mashify
         conn.response :json, :content_type => /\bjson$/
-        conn.use RaiseError
 
         conn.adapter Faraday.default_adapter end
       super(faraday)

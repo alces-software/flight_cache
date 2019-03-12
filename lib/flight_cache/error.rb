@@ -28,4 +28,9 @@
 module FlightCache
   # Generic FlightCache Error
   class Error < StandardError; end
+
+  # UnauthorizedError
+  # Use: Accessed denied due to failing authentication
+  # Code: 401
+  class UnauthorizedError < Error; end
 end
