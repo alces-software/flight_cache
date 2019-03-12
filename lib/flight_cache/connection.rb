@@ -38,6 +38,7 @@ module FlightCache
         conn.use FaradayMiddleware::FollowRedirects
         conn.use FaradayMiddleware::Mashify
         conn.response :json, :content_type => /\bjson$/
+        conn.response :raise_error
 
         conn.adapter Faraday.default_adapter
       end
