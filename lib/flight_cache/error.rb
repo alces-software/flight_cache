@@ -29,8 +29,26 @@ module FlightCache
   # Generic FlightCache Error
   class Error < StandardError; end
 
+  # VerbotenError
+  # Use: Archetype class for permission denied errors
+  # Code: 40* (ish)
+  class VerbotenError < Error
+    MESSAGE = <<~ERROR.chomp
+      You do not have permission to view this content
+    ERROR
+
+    def initialize(raw)
+      super((raw.nil? || raw.empty?) ? MESSAGE : raw)
+    end
+  end
+
   # UnauthorizedError
   # Use: Accessed denied due to failing authentication
   # Code: 401
-  class UnauthorizedError < Error; end
+  class UnauthorizedError < VerbotenError; end
+
+  # ForbiddenError
+  # Use: Accessed denied due to lack of permissions
+  # Code: 403
+  class ForbiddenError < VerbotenError; end
 end

@@ -31,12 +31,16 @@ require 'hashie'
 
 module FlightCache
   class Connection < DelegateClass(Faraday::Connection)
-    class RaiseError < Faraday::Middleware
+    class RaiseError < Faraday::Response::RaiseError
       def call(req)
         @app.call(req).on_complete do |res|
           case res.status
           when 401
-            raise UnauthorizedError, res.body.error
+            raise UnauthorizedError, res.body&.error
+          when 403
+            raise ForbiddenError
+          else
+            on_complete(req)
           end
         end
       end
@@ -49,21 +53,21 @@ module FlightCache
 
         conn.use FaradayMiddleware::FollowRedirects
 
-        conn.response :raise_error
         conn.use RaiseError
 
         conn.use FaradayMiddleware::Mashify
         conn.response :json, :content_type => /\bjson$/
 
-        conn.adapter Faraday.default_adapter end
+        conn.adapter Faraday.default_adapter
+      end
       super(faraday)
     end
 
-    def get_blob_by_id(id)
+    def get_by_id(id)
       get("/blobs/#{id}")
     end
 
-    def download_blob_by_id(id)
+    def download_by_id(id)
       get("/blobs/#{id}/download")
     end
 
@@ -78,7 +82,7 @@ module FlightCache
       end
     end
 
-    def get_blobs_by_tag(tag)
+    def gets_by_tag(tag)
       get(File.join("/tags/#{tag}/blobs"))
     end
 

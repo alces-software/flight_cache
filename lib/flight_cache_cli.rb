@@ -61,7 +61,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      puts client.connection.download_blob_by_id(id).body
+      puts client.connection.download_by_id(id).body
     end
   end
 
@@ -77,7 +77,7 @@ class FlightCacheCli
     c.syntax = 'blob ID'
     c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
-      pp client.connection.get_blob_by_id(id).body
+      pp client.connection.get_by_id(id).body
     end
   end
 
@@ -85,7 +85,7 @@ class FlightCacheCli
     c.syntax = 'tag:blobs TAG'
     c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      pp client.connection.get_blobs_by_tag(tag).body
+      pp client.connection.gets_by_tag(tag).body
     end
   end
 
