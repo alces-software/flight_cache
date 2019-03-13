@@ -52,7 +52,7 @@ module FlightCache
       Builder.new(self, client)
     end
 
-    def self.build(data, complete: nil)
+    def self.build(data, complete: true)
       new(__data__: data, complete?: complete)
     end
 
@@ -68,6 +68,17 @@ module FlightCache
                required: :complete?,
                from: :__data__,
                with: lambda { |d| d&.id }
+    end
+
+    def self.data_link(key, from: nil)
+      from ||= key
+      property key,
+               required: :complete?,
+               from: :__data__,
+               coerce: Models.method(:coerce_data).to_proc,
+               with: ->(data) do
+                 data&.relationships&.send(from)&.data
+               end
     end
 
     property :__data__

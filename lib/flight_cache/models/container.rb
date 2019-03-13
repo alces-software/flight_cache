@@ -29,17 +29,12 @@ module FlightCache
   module Models
     class Container < Model
       def self.show(id, client:)
-        build(client.connection.get_container_by_id(id).body.data, complete: true)
+        build(client.connection.get_container_by_id(id).body.data)
       end
 
       data_id
       data_attribute :tag
-
-      property :blobs,
-               from: :__data__,
-               with: ->(data) do
-                 data&.relationships&.blobs&.data&.map { |b| Blob.build(b) }
-               end
+      data_link      :blobs
     end
   end
 end

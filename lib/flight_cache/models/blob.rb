@@ -28,27 +28,20 @@
 module FlightCache
   module Models
     class Blob < Model
-      property :container,
-               required: :complete?,
-               coerce: lambda { |v| Container.build(v) },
-               from: :__data__,
-               with: ->(data) do
-                 data.relationships&.container&.data
-               end
-
       data_id
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
+      data_link      :container
 
       def self.index_by_tag(tag, client:)
         client.connection.gets_by_tag(tag).body.data.map do |blob|
-          build(blob, complete: true)
+          build(blob)
         end
       end
 
       def self.show(id, client:)
-        build(client.connection.get_by_id(id).body.data, complete: true)
+        build(client.connection.get_by_id(id).body.data)
       end
 
       def self.download(id, client:)

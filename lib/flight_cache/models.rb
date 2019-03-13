@@ -27,5 +27,19 @@
 
 require 'flight_cache/model'
 
+module FlightCache
+  module Models
+    def self.coerce_data(data)
+      if data.is_a?(Array)
+        data.map { |d| coerce_data(d) }
+      elsif data.respong_to?(:type) && data.type
+        self.const_get(data.type.capitalize).build(data, complete: false)
+      else
+        data
+      end
+    end
+  end
+end
+
 require 'flight_cache/models/blob'
 require 'flight_cache/models/container'
