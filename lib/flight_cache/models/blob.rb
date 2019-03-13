@@ -35,13 +35,11 @@ module FlightCache
       data_link      :container
 
       def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data.map do |blob|
-          build(blob)
-        end
+        client.connection.gets_by_tag(tag).body.data
       end
 
       def self.show(id, client:)
-        build(client.connection.get_by_id(id).body.data)
+        client.connection.get_by_id(id).body.data
       end
 
       def self.download(id, client:)

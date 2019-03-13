@@ -25,7 +25,7 @@
 # ==============================================================================
 #
 
-require 'hashie/trash'
+require 'hashie'
 
 module FlightCache
   class Model < Hashie::Trash

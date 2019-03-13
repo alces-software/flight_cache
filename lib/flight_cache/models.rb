@@ -32,7 +32,7 @@ module FlightCache
     def self.coerce_data(data)
       if data.is_a?(Array)
         data.map { |d| coerce_data(d) }
-      elsif data.respong_to?(:type) && data.type
+      elsif data.respond_to?(:type) && data.type
         self.const_get(data.type.capitalize).build(data, complete: false)
       else
         data

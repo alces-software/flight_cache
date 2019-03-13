@@ -27,7 +27,7 @@
 
 require 'faraday_middleware'
 require 'flight_cache/error'
-require 'hashie'
+require 'flight_cache/models'
 
 module FlightCache
   class Connection < DelegateClass(Faraday::Connection)
@@ -46,13 +46,21 @@ module FlightCache
       end
     end
 
+    class CoerceIntoModels < Faraday::Middleware
+      def call(req)
+        @app.call(req).on_complete do |res|
+          res.body.data = Models.coerce_data(res.body.data)
+        end
+      end
+    end
+
     def initialize(host:, token:)
       faraday = Faraday::Connection.new(host) do |conn|
         conn.token_auth(token)
         conn.request :json
 
+        conn.use CoerceIntoModels
         conn.use FaradayMiddleware::FollowRedirects
-
         conn.use RaiseError
 
         conn.use FaradayMiddleware::Mashify
