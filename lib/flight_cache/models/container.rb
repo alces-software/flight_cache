@@ -27,7 +27,7 @@
 
 module FlightCache
   module Models
-    class Container < Hashie::Dash
+    class Container < Model
       def self.api_build(data)
         new(
           id: data&.id,

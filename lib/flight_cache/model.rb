@@ -25,40 +25,26 @@
 # ==============================================================================
 #
 
+require 'hashie/trash'
+
 module FlightCache
-  module Models
-    class Blob < Model
-      property :id,
-               required: :data?,
-               from: :__data__,
-               with: ->(d) { d&.id }
-
-      property :container,
-               required: :data?,
-               from: :__data__,
-               with: ->(data) do
-                 Container.api_build(data.relationships&.container&.data)
-               end
-
-      data_attribute :checksum
-      data_attribute :filename
-      data_attribute :size, from: :byte_size
-
-      def self.api_build(data)
-        new(__data__: data)
+  class Model < Hashie::Trash
+    def self.data_attribute(key, from: nil)
+      from ||= key
+      property key, required: :data?, from: :__data__, with: ->(data) do
+        data&.attributes&.[](from)
       end
+    end
 
-      def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data.map { |b| api_build(b) }
-      end
+    property :__data__
 
-      def self.show(id, client:)
-        api_build(client.connection.get_by_id(id).body.data)
-      end
+    def to_h
+      super().dup.tap { |h| h.delete(:__data__) }
+    end
 
-      def self.download(id, client:)
-        client.connection.download_by_id(id).body
-      end
+    def data?
+      !!__data__
     end
   end
 end
+

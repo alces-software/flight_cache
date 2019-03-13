@@ -28,8 +28,7 @@
 require 'commander'
 
 require 'flight_cache/client'
-require 'flight_cache/models/blob'
-require 'flight_cache/models/container'
+require 'flight_cache/models'
 require 'pp'
 
 class FlightCacheCli

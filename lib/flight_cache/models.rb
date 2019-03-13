@@ -25,40 +25,7 @@
 # ==============================================================================
 #
 
-module FlightCache
-  module Models
-    class Blob < Model
-      property :id,
-               required: :data?,
-               from: :__data__,
-               with: ->(d) { d&.id }
+require 'flight_cache/model'
 
-      property :container,
-               required: :data?,
-               from: :__data__,
-               with: ->(data) do
-                 Container.api_build(data.relationships&.container&.data)
-               end
-
-      data_attribute :checksum
-      data_attribute :filename
-      data_attribute :size, from: :byte_size
-
-      def self.api_build(data)
-        new(__data__: data)
-      end
-
-      def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data.map { |b| api_build(b) }
-      end
-
-      def self.show(id, client:)
-        api_build(client.connection.get_by_id(id).body.data)
-      end
-
-      def self.download(id, client:)
-        client.connection.download_by_id(id).body
-      end
-    end
-  end
-end
+require 'flight_cache/models/blob'
+require 'flight_cache/models/container'
