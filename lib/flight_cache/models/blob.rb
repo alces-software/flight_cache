@@ -30,8 +30,7 @@ require 'hashie/dash'
 module FlightCache
   module Models
     class Blob < Hashie::Dash
-      def self.show(id, client:)
-        data = client.connection.get_by_id(id).body.data
+      def self.api_build(data)
         new(
           id:           data.id,
           checksum:     data.attributes.checksum,
@@ -39,6 +38,14 @@ module FlightCache
           filename:     data.attributes.filename,
           container_id: data.relationships.container.data.id,
         )
+      end
+
+      def self.index_by_tag(tag, client:)
+        client.connection.gets_by_tag(tag).body.data.map { |b| api_build(b) }
+      end
+
+      def self.show(id, client:)
+        api_build(client.connection.get_by_id(id).body.data)
       end
 
       def self.download(id, client:)
