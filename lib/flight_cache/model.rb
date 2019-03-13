@@ -29,6 +29,27 @@ require 'hashie/trash'
 
 module FlightCache
   class Model < Hashie::Trash
+    Builder = Struct.new(:klass, :client) do
+      MODEL_METHOD = :flight_cache_model_method
+
+      def method_missing(s, *a, &b)
+        if respond_to_missing?(s) == MODEL_METHOD
+          klass.send(s, *a, client: client, &b)
+        else
+          super
+        end
+      end
+
+      def respond_to_missing?(s)
+        return MODEL_METHOD if klass.respond_to?(s)
+        super
+      end
+    end
+
+    def self.builder(client)
+      Builder.new(self, client)
+    end
+
     def self.data_attribute(key, from: nil)
       from ||= key
       property key, required: :complete?, from: :__data__, with: ->(data) do
