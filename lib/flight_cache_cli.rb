@@ -28,6 +28,7 @@
 require 'commander'
 
 require 'flight_cache/client'
+require 'flight_cache/models/blob'
 require 'pp'
 
 class FlightCacheCli
@@ -77,7 +78,7 @@ class FlightCacheCli
     c.syntax = 'blob ID'
     c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
-      pp client.connection.get_by_id(id).body
+      pp FlightCache::Models::Blob.show(id, client: client)
     end
   end
 
