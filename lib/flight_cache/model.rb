@@ -50,6 +50,10 @@ module FlightCache
       Builder.new(self, client)
     end
 
+    def self.build(data, complete: nil)
+      new(__data__: data, complete?: complete)
+    end
+
     def self.data_attribute(key, from: nil)
       from ||= key
       property key, required: :complete?, from: :__data__, with: ->(data) do
