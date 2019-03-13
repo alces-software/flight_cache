@@ -28,11 +28,6 @@
 module FlightCache
   module Models
     class Blob < Model
-      property :id,
-               required: :complete?,
-               from: :__data__,
-               with: ->(d) { d&.id }
-
       property :container,
                required: :complete?,
                from: :__data__,
@@ -40,6 +35,7 @@ module FlightCache
                  Container.api_build(data.relationships&.container&.data)
                end
 
+      data_id
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size

@@ -61,6 +61,13 @@ module FlightCache
       end
     end
 
+    def self.data_id
+      property :id,
+               required: :complete?,
+               from: :__data__,
+               with: lambda { |d| d&.id }
+    end
+
     property :__data__
     property :complete?, default: false
 
