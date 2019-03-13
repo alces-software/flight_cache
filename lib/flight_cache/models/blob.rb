@@ -30,9 +30,10 @@ module FlightCache
     class Blob < Model
       property :container,
                required: :complete?,
+               coerce: lambda { |v| Container.build(v) },
                from: :__data__,
                with: ->(data) do
-                 Container.build(data.relationships&.container&.data)
+                 data.relationships&.container&.data
                end
 
       data_id

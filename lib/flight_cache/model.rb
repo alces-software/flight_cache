@@ -29,6 +29,8 @@ require 'hashie/trash'
 
 module FlightCache
   class Model < Hashie::Trash
+    include Hashie::Extensions::Dash::Coercion
+
     Builder = Struct.new(:klass, :client) do
       MODEL_METHOD = :flight_cache_model_method
 
