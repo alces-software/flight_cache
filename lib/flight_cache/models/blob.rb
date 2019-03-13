@@ -25,18 +25,22 @@
 # ==============================================================================
 #
 
-require 'hashie/dash'
+require 'hashie/trash'
 
 module FlightCache
   module Models
-    class Blob < Hashie::Dash
+    class Blob < Hashie::Trash
+      def self.data_attribute(key)
+        property key, from: :__data__, with: ->(data) do
+          data.attributes[key]
+        end
+      end
+
       def self.api_build(data)
         new(
+          __data__: data,
           id:           data.id,
-          checksum:     data.attributes&.checksum,
-          size:         data.attributes&.size,
-          filename:     data.attributes&.filename,
-          container_id: data.relationships&.container&.data&.id,
+          container_id:    data.relationships&.container&.data&.id,
         )
       end
 
@@ -52,11 +56,14 @@ module FlightCache
         client.connection.download_by_id(id).body
       end
 
-      property :id, required: true
-      property :checksum
-      property :size
-      property :filename
+      property :__data__, required: true
+
+      property :id
       property :container_id
+
+      data_attribute :checksum
+      data_attribute :size
+      data_attribute :filename
     end
   end
 end
