@@ -62,7 +62,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      puts client.connection.download_by_id(id).body
+      puts FlightCache::Models::Blob.download(id, client: client)
     end
   end
 

@@ -41,6 +41,10 @@ module FlightCache
         )
       end
 
+      def self.download(id, client:)
+        client.connection.download_by_id(id).body
+      end
+
       property :id, required: true
       property :checksum
       property :size
