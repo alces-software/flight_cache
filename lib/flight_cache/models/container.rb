@@ -28,22 +28,18 @@
 module FlightCache
   module Models
     class Container < Model
-      def self.api_build(data, complete: nil)
-        new(
-          id: data&.id,
-          tag: data&.attributes&.tag,
-          complete?: complete,
-          blobs: data&.relationships&.blobs&.data&.map { |b| Blob.api_build(b) }
-        )
-      end
-
       def self.show(id, client:)
-        api_build(client.connection.get_container_by_id(id).body.data, complete: true)
+        build(client.connection.get_container_by_id(id).body.data, complete: true)
       end
 
-      property :id,     required: :complete?
-      property :tag,    required: :complete?
-      property :blobs,  reqiured: :complete?
+      data_id
+      data_attribute :tag
+
+      property :blobs,
+               from: :__data__,
+               with: ->(data) do
+                 data&.relationships&.blobs&.data&.map { |b| Blob.build(b) }
+               end
     end
   end
 end

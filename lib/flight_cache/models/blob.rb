@@ -32,7 +32,7 @@ module FlightCache
                required: :complete?,
                from: :__data__,
                with: ->(data) do
-                 Container.api_build(data.relationships&.container&.data)
+                 Container.build(data.relationships&.container&.data)
                end
 
       data_id
