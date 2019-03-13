@@ -30,14 +30,43 @@ require 'hashie/trash'
 module FlightCache
   module Models
     class Blob < Hashie::Trash
-      module ClassHelpers
-        def data_attribute(key)
-          property key, from: :__data__, with: ->(data) do
-            data.attributes[key]
+      module ModelHelpers
+        module ClassMethods
+          def data_attribute(key, from: nil)
+            from ||= key
+            property key, require: true, from: :__data__, with: ->(data) do
+              data.attributes[from]
+            end
           end
         end
+
+        def self.included(base)
+          base.extend ClassMethods
+          base.instance_exec do
+            property :__data__
+          end
+        end
+
+        def to_h
+          super().dup.tap { |h| h.delete(:__data__) }
+        end
       end
-      extend ClassHelpers
+      include ModelHelpers
+
+      property :id,
+               required: true,
+               from: :__data__,
+               with: ->(d) { d.id }
+
+      property :container,
+               from: :__data__,
+               with: ->(data) do
+                 Container.api_build(data.relationships.container.data)
+               end
+
+      data_attribute :checksum
+      data_attribute :filename
+      data_attribute :size, from: :byte_size
 
       def self.api_build(data)
         new(__data__: data)
@@ -54,23 +83,6 @@ module FlightCache
       def self.download(id, client:)
         client.connection.download_by_id(id).body
       end
-
-      property :__data__
-
-      property :id,
-               required: true,
-               from: :__data__,
-               with: ->(d) { d.id }
-
-      property :container,
-               from: :__data__,
-               with: ->(data) do
-                 Container.api_build(data.relationships.container.data)
-               end
-
-      data_attribute :checksum
-      data_attribute :size
-      data_attribute :filename
     end
   end
 end

@@ -63,7 +63,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      pp FlightCache::Models::Blob.download(id, client: client)
+      print FlightCache::Models::Blob.download(id, client: client)
     end
   end
 
@@ -71,7 +71,7 @@ class FlightCacheCli
     c.syntax = 'container ID'
     c.description = 'Get the metedata for a particular container'
     act(c) do |id|
-      pp FlightCache::Models::Container.show(id, client: client)
+      pp FlightCache::Models::Container.show(id, client: client).to_h
     end
   end
 
@@ -79,7 +79,7 @@ class FlightCacheCli
     c.syntax = 'blob ID'
     c.description = 'Get the metadata about a particular blob'
     act(c) do |id|
-      pp FlightCache::Models::Blob.show(id, client: client)
+      pp FlightCache::Models::Blob.show(id, client: client).to_h
     end
   end
 
@@ -87,7 +87,7 @@ class FlightCacheCli
     c.syntax = 'tag:blobs TAG'
     c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      pp FlightCache::Models::Blob.index_by_tag(tag, client: client)
+      pp FlightCache::Models::Blob.index_by_tag(tag, client: client).to_h
     end
   end
 
@@ -97,7 +97,7 @@ class FlightCacheCli
     act(c) do |id, filepath|
       io = File.open(filepath, 'r')
       name = File.basename(filepath)
-      pp client.connection.upload_to_container_id(id, name, io).body
+      pp client.connection.upload_to_container_id(id, name, io).body.to_h
     end
   end
 end
