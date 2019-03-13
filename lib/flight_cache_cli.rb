@@ -29,6 +29,7 @@ require 'commander'
 
 require 'flight_cache/client'
 require 'flight_cache/models/blob'
+require 'flight_cache/models/container'
 require 'pp'
 
 class FlightCacheCli
@@ -62,7 +63,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      puts FlightCache::Models::Blob.download(id, client: client)
+      pp FlightCache::Models::Blob.download(id, client: client)
     end
   end
 
@@ -70,7 +71,7 @@ class FlightCacheCli
     c.syntax = 'container ID'
     c.description = 'Get the metedata for a particular container'
     act(c) do |id|
-      pp client.connection.get_container_by_id(id).body
+      pp FlightCache::Models::Container.show(id, client: client)
     end
   end
 

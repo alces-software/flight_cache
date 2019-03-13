@@ -25,38 +25,24 @@
 # ==============================================================================
 #
 
-require 'hashie/dash'
-
 module FlightCache
   module Models
-    class Blob < Hashie::Dash
+    class Container < Hashie::Dash
       def self.api_build(data)
         new(
-          id:           data.id,
-          checksum:     data.attributes&.checksum,
-          size:         data.attributes&.size,
-          filename:     data.attributes&.filename,
-          container_id: data.relationships&.container&.data&.id,
+          id: data.id,
+          tag: data.attributes.tag,
+          blobs: data.relationships.blobs.data.map { |b| Blob.api_build(b) }
         )
       end
 
-      def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data.map { |b| api_build(b) }
-      end
-
       def self.show(id, client:)
-        api_build(client.connection.get_by_id(id).body.data)
-      end
-
-      def self.download(id, client:)
-        client.connection.download_by_id(id).body
+        api_build(client.connection.get_container_by_id(id).body.data)
       end
 
       property :id, required: true
-      property :checksum
-      property :size
-      property :filename
-      property :container_id
+      property :tag
+      property :blobs
     end
   end
 end
