@@ -29,12 +29,12 @@ module FlightCache
   module Models
     class Blob < Model
       property :id,
-               required: :data?,
+               required: :complete?,
                from: :__data__,
                with: ->(d) { d&.id }
 
       property :container,
-               required: :data?,
+               required: :complete?,
                from: :__data__,
                with: ->(data) do
                  Container.api_build(data.relationships&.container&.data)
@@ -44,16 +44,18 @@ module FlightCache
       data_attribute :filename
       data_attribute :size, from: :byte_size
 
-      def self.api_build(data)
-        new(__data__: data)
+      def self.api_build(data, complete: nil)
+        new(__data__: data, complete?: complete)
       end
 
       def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data.map { |b| api_build(b) }
+        client.connection.gets_by_tag(tag).body.data.map do |blob|
+          api_build(blob, complete: true)
+        end
       end
 
       def self.show(id, client:)
-        api_build(client.connection.get_by_id(id).body.data)
+        api_build(client.connection.get_by_id(id).body.data, complete: true)
       end
 
       def self.download(id, client:)

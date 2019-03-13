@@ -31,12 +31,13 @@ module FlightCache
   class Model < Hashie::Trash
     def self.data_attribute(key, from: nil)
       from ||= key
-      property key, required: :data?, from: :__data__, with: ->(data) do
+      property key, required: :complete?, from: :__data__, with: ->(data) do
         data&.attributes&.[](from)
       end
     end
 
     property :__data__
+    property :complete?, default: false
 
     def to_h
       super().dup.tap { |h| h.delete(:__data__) }

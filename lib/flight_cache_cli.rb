@@ -86,7 +86,7 @@ class FlightCacheCli
     c.syntax = 'tag:blobs TAG'
     c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      pp FlightCache::Models::Blob.index_by_tag(tag, client: client).to_h
+      pp FlightCache::Models::Blob.index_by_tag(tag, client: client).map(&:to_h)
     end
   end
 
