@@ -26,6 +26,7 @@
 #
 
 require 'flight_cache/connection'
+require 'flight_cache/models'
 
 module FlightCache
   Client = Struct.new(:host, :token) do
@@ -39,6 +40,14 @@ module FlightCache
 
     def connection
       Connection.new(host: host, token: token)
+    end
+
+    def blob
+      Models::Blob.builder(self)
+    end
+
+    def container
+      Models::Container.builder(self)
     end
   end
 end
