@@ -31,8 +31,8 @@ module FlightCache
       def self.api_build(data)
         new(
           id: data.id,
-          tag: data.attributes.tag,
-          blobs: data.relationships.blobs.data.map { |b| Blob.api_build(b) }
+          tag: data.attributes&.tag,
+          blobs: data.relationships&.blobs&.data&.map { |b| Blob.api_build(b) }
         )
       end
 

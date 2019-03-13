@@ -30,18 +30,17 @@ require 'hashie/trash'
 module FlightCache
   module Models
     class Blob < Hashie::Trash
-      def self.data_attribute(key)
-        property key, from: :__data__, with: ->(data) do
-          data.attributes[key]
+      module ClassHelpers
+        def data_attribute(key)
+          property key, from: :__data__, with: ->(data) do
+            data.attributes[key]
+          end
         end
       end
+      extend ClassHelpers
 
       def self.api_build(data)
-        new(
-          __data__: data,
-          id:           data.id,
-          container_id:    data.relationships&.container&.data&.id,
-        )
+        new(__data__: data)
       end
 
       def self.index_by_tag(tag, client:)
@@ -56,10 +55,18 @@ module FlightCache
         client.connection.download_by_id(id).body
       end
 
-      property :__data__, required: true
+      property :__data__
 
-      property :id
-      property :container_id
+      property :id,
+               required: true,
+               from: :__data__,
+               with: ->(d) { d.id }
+
+      property :container,
+               from: :__data__,
+               with: ->(data) do
+                 Container.api_build(data.relationships.container.data)
+               end
 
       data_attribute :checksum
       data_attribute :size
