@@ -30,9 +30,9 @@ module FlightCache
     class Container < Hashie::Dash
       def self.api_build(data)
         new(
-          id: data.id,
-          tag: data.attributes&.tag,
-          blobs: data.relationships&.blobs&.data&.map { |b| Blob.api_build(b) }
+          id: data&.id,
+          tag: data&.attributes&.tag,
+          blobs: data&.relationships&.blobs&.data&.map { |b| Blob.api_build(b) }
         )
       end
 
@@ -40,7 +40,7 @@ module FlightCache
         api_build(client.connection.get_container_by_id(id).body.data)
       end
 
-      property :id, required: true
+      property :id
       property :tag
       property :blobs
     end

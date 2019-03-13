@@ -34,34 +34,37 @@ module FlightCache
         module ClassMethods
           def data_attribute(key, from: nil)
             from ||= key
-            property key, require: true, from: :__data__, with: ->(data) do
-              data.attributes[from]
+            property key, require: :data?, from: :__data__, with: ->(data) do
+              data&.attributes&.[](from)
             end
           end
         end
 
         def self.included(base)
           base.extend ClassMethods
-          base.instance_exec do
-            property :__data__
-          end
+          base.instance_exec { property :__data__ }
         end
 
         def to_h
           super().dup.tap { |h| h.delete(:__data__) }
         end
+
+        def data?
+          !!__data__
+        end
       end
       include ModelHelpers
 
       property :id,
-               required: true,
+               required: :data?,
                from: :__data__,
-               with: ->(d) { d.id }
+               with: ->(d) { d&.id }
 
       property :container,
+               required: :data?,
                from: :__data__,
                with: ->(data) do
-                 Container.api_build(data.relationships.container.data)
+                 Container.api_build(data.relationships&.container&.data)
                end
 
       data_attribute :checksum
