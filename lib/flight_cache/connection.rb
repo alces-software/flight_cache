@@ -46,9 +46,11 @@ module FlightCache
       end
     end
 
+    # TODO: Remove Me!
     class CoerceIntoModels < Faraday::Middleware
       def call(req)
         @app.call(req).on_complete do |res|
+          next if res.body.is_a?(String)
           res.body.data = Models.coerce_data(res.body.data)
         end
       end
