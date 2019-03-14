@@ -51,7 +51,7 @@ module FlightCache
       def call(req)
         @app.call(req).on_complete do |res|
           next if res.body.is_a?(String)
-          res.body.data = Models.coerce_data(res.body.data)
+          res.body.data = Models.coerce_build(res.body.data)
         end
       end
     end

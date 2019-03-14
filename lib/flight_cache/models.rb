@@ -29,7 +29,7 @@ require 'flight_cache/model'
 
 module FlightCache
   module Models
-    def self.coerce_data(data, klass: nil)
+    def self.coerce_build(data, klass: nil)
       if data.is_a?(Array)
         data.map { |d| coerce_data(d, klass: klass) }
       else

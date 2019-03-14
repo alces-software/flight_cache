@@ -56,9 +56,9 @@ module FlightCache
       new(__data__: data)
     end
 
-    def self.coerce_data(data = nil)
+    def self.coerce_build(data = nil)
       data ||= yield
-      Models.coerce_data(data, klass: self)
+      Models.coerce_build(data, klass: self)
     end
 
     def self.data_attribute(key, from: nil)
