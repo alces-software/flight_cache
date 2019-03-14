@@ -34,15 +34,15 @@ module FlightCache
       data_attribute :size, from: :byte_size
 
       def self.index_by_tag(tag, client:)
-        client.connection.gets_by_tag(tag).body.data
+        client.gets_by_tag(tag).body.data
       end
 
       def self.show(id, client:)
-        client.connection.get_by_id(id).body.data
+        client.get_by_id(id).body.data
       end
 
       def self.download(id, client:)
-        client.connection.download_by_id(id).body
+        client.download_by_id(id).body
       end
     end
   end

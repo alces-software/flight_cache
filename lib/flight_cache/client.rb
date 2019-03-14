@@ -25,13 +25,70 @@
 # ==============================================================================
 #
 
-require 'flight_cache/connection'
+require 'faraday_middleware'
+require 'flight_cache/error'
 require 'flight_cache/models'
 
 module FlightCache
-  Client = Struct.new(:host, :token) do
+  class Client < DelegateClass(Faraday::Connection)
+    class RaiseError < Faraday::Response::RaiseError
+      def call(req)
+        @app.call(req).on_complete do |res|
+          case res.status
+          when 401
+            raise UnauthorizedError, res.body&.error
+          when 403
+            raise ForbiddenError
+          else
+            on_complete(req)
+          end
+        end
+      end
+    end
+
+    # TODO: Remove Me!
+    class CoerceIntoModels < Faraday::Middleware
+      def call(req)
+        @app.call(req).on_complete do |res|
+          next if res.body.is_a?(String)
+          res.body.data = Models.coerce_data(res.body.data)
+        end
+      end
+    end
+
+    attr_reader :host
+    attr_reader :token
+
+    def initialize(host, token)
+      @host = host
+      @token = token
+      super(connection)
+    end
+
     def connection
-      Connection.new(host: host, token: token)
+      @connection ||= begin
+        Faraday::Connection.new(host) do |conn|
+          conn.token_auth(token)
+          conn.request :json
+
+          conn.use CoerceIntoModels
+          conn.use FaradayMiddleware::FollowRedirects
+          conn.use RaiseError
+
+          conn.use FaradayMiddleware::Mashify
+          conn.response :json, :content_type => /\bjson$/
+
+          conn.adapter Faraday.default_adapter
+        end
+      end
+    end
+
+    def host
+      (v = @host).to_s.empty? ? (raise 'No host given') : v
+    end
+
+    def token
+      (v = @token).to_s.empty? ? (raise 'No token given'): v
     end
 
     def blob
@@ -40,6 +97,35 @@ module FlightCache
 
     def container
       Models::Container.builder(self)
+    end
+
+    def get_by_id(id)
+      get("/blobs/#{id}")
+    end
+
+    def download_by_id(id)
+      get("/blobs/#{id}/download")
+    end
+
+    def get_container_by_id(id)
+      get(container_path(id))
+    end
+
+    def upload_to_container_id(id, name, io)
+      upload_path = container_path(id, 'upload', name)
+      post(upload_path, io.read) do |req|
+        req.headers['Content-Type'] = 'application/octet-stream'
+      end
+    end
+
+    def gets_by_tag(tag)
+      get(File.join("/tags/#{tag}/blobs"))
+    end
+
+    private
+
+    def container_path(id, *path)
+      File.join('/containers', id, *path)
     end
   end
 end
