@@ -37,7 +37,7 @@ module FlightCache
       You do not have permission to view this content
     ERROR
 
-    def initialize(raw)
+    def initialize(raw = nil)
       super((raw.nil? || raw.empty?) ? MESSAGE : raw)
     end
   end
