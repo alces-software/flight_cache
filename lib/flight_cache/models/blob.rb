@@ -28,22 +28,24 @@
 module FlightCache
   module Models
     class Blob < Model
+      builder_class do
+        def index_by_tag(tag)
+          client.gets_by_tag(tag).body.data
+        end
+
+        def show(id)
+          client.get_by_id(id).body.data
+        end
+
+        def download(id)
+          client.download_by_id(id).body
+        end
+      end
+
       data_id
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
-
-      def self.index_by_tag(tag, client:)
-        client.gets_by_tag(tag).body.data
-      end
-
-      def self.show(id, client:)
-        client.get_by_id(id).body.data
-      end
-
-      def self.download(id, client:)
-        client.download_by_id(id).body
-      end
     end
   end
 end

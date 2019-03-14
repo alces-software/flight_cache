@@ -31,25 +31,31 @@ module FlightCache
   class Model < Hashie::Trash
     include Hashie::Extensions::Dash::Coercion
 
-    Builder = Struct.new(:klass, :client) do
-      MODEL_METHOD = :flight_cache_model_method
+    class Builder < SimpleDelegator
+      attr_reader :client
 
-      def method_missing(s, *a, &b)
-        if respond_to_missing?(s) == MODEL_METHOD
-          klass.send(s, *a, client: client, &b)
-        else
-          super
-        end
+      def initialize(client)
+        @client = client
+        super(klass)
       end
 
-      def respond_to_missing?(s)
-        return MODEL_METHOD if klass.respond_to?(s)
-        super
+      def klass
+        raise NotImplementedError
+      end
+    end
+
+    def self.builder_class(&b)
+      @builder_class ||= begin
+        model_class = self
+        Class.new(Builder) do
+          define_method(:klass) { model_class }
+          class_eval(&b)
+        end
       end
     end
 
     def self.builder(client)
-      Builder.new(self, client)
+      builder_class.new(client)
     end
 
     def self.build(data)
@@ -77,6 +83,7 @@ module FlightCache
 
     # First attempt at linking Models together. Delete this at will
     # It is temporarily being preserved for future reference
+    #
     #
     # def self.data_link(key, from: nil)
     #   from ||= key
