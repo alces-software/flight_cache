@@ -29,13 +29,16 @@ require 'flight_cache/model'
 
 module FlightCache
   module Models
-    def self.coerce_data(data)
+    def self.coerce_data(data, klass: nil)
       if data.is_a?(Array)
-        data.map { |d| coerce_data(d) }
-      elsif data.respond_to?(:type) && data.type
-        self.const_get(data.type.capitalize).build(data, complete: false)
+        data.map { |d| coerce_data(d, klass: klass) }
       else
-        data
+        const_get(data.type.capitalize).build(data).tap do |model|
+          next if klass.nil? || model.is_a?(klass)
+          raise ModelTypeError, <<~ERROR.chomp
+            Was expecting a #{klass} but got #{model.class}
+          ERROR
+        end
       end
     end
   end

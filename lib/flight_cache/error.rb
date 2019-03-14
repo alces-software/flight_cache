@@ -51,4 +51,8 @@ module FlightCache
   # Use: Accessed denied due to lack of permissions
   # Code: 403
   class ForbiddenError < VerbotenError; end
+
+  # ModelTypeError
+  # Use: The server response does not match the model type
+  class ModelTypeError < Error; end
 end

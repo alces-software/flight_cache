@@ -56,6 +56,11 @@ module FlightCache
       new(__data__: data, complete?: complete)
     end
 
+    def self.coerce_data(data = nil)
+      data ||= yield
+      Models.coerce_data(data, klass: self)
+    end
+
     def self.data_attribute(key, from: nil)
       from ||= key
       property key, required: :complete?, from: :__data__, with: ->(data) do
