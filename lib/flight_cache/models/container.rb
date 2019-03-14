@@ -34,7 +34,6 @@ module FlightCache
 
       data_id
       data_attribute :tag
-      data_link      :blobs
     end
   end
 end

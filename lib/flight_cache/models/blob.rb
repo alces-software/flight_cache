@@ -32,7 +32,6 @@ module FlightCache
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
-      data_link      :container
 
       def self.index_by_tag(tag, client:)
         client.connection.gets_by_tag(tag).body.data

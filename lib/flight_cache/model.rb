@@ -70,16 +70,19 @@ module FlightCache
                with: lambda { |d| d&.id }
     end
 
-    def self.data_link(key, from: nil)
-      from ||= key
-      property key,
-               required: :complete?,
-               from: :__data__,
-               coerce: Models.method(:coerce_data).to_proc,
-               with: ->(data) do
-                 data&.relationships&.send(from)&.data
-               end
-    end
+    # First attempt at linking Models together. Delete this at will
+    # It is temporarily being preserved for future reference
+    #
+    # def self.data_link(key, from: nil)
+    #   from ||= key
+    #   property key,
+    #            required: :complete?,
+    #            from: :__data__,
+    #            coerce: Models.method(:coerce_data).to_proc,
+    #            with: ->(data) do
+    #              data&.relationships&.send(from)&.data
+    #            end
+    # end
 
     property :__data__
     property :complete?, default: false
