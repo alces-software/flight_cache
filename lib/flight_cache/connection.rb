@@ -56,21 +56,39 @@ module FlightCache
       end
     end
 
+    attr_reader :host
+    attr_reader :token
+
     def initialize(host:, token:)
-      faraday = Faraday::Connection.new(host) do |conn|
-        conn.token_auth(token)
-        conn.request :json
+      @host = host
+      @token = token
+      super(connection)
+    end
 
-        conn.use CoerceIntoModels
-        conn.use FaradayMiddleware::FollowRedirects
-        conn.use RaiseError
+    def connection
+      @connection ||= begin
+        Faraday::Connection.new(host) do |conn|
+          conn.token_auth(token)
+          conn.request :json
 
-        conn.use FaradayMiddleware::Mashify
-        conn.response :json, :content_type => /\bjson$/
+          conn.use CoerceIntoModels
+          conn.use FaradayMiddleware::FollowRedirects
+          conn.use RaiseError
 
-        conn.adapter Faraday.default_adapter
+          conn.use FaradayMiddleware::Mashify
+          conn.response :json, :content_type => /\bjson$/
+
+          conn.adapter Faraday.default_adapter
+        end
       end
-      super(faraday)
+    end
+
+    def host
+      (v = @host).to_s.empty? ? (raise 'No host given') : v
+    end
+
+    def token
+      (v = @token).to_s.empty? ? (raise 'No token given'): v
     end
 
     def get_by_id(id)
