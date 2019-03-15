@@ -42,6 +42,14 @@ module FlightCache
       def klass
         raise NotImplementedError
       end
+
+      def build
+        super(yield(client.connection))
+      end
+
+      def coerce_build
+        super(yield(client.connection))
+      end
     end
 
     def self.builder_class(&b)
@@ -62,8 +70,7 @@ module FlightCache
       new(__data__: data)
     end
 
-    def self.coerce_build(data = nil)
-      data ||= yield
+    def self.coerce_build(data)
       Models.coerce_build(data, klass: self)
     end
 

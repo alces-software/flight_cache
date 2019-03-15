@@ -28,8 +28,10 @@
 module FlightCache
   module Models
     class Container < Model
-      def self.show(id, client:)
-        client.get_container_by_id(id).body.data
+      builder_class do
+        def show(id)
+          client.get_container_by_id(id).body.data
+        end
       end
 
       data_id
