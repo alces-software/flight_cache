@@ -52,7 +52,7 @@ module FlightCache
     def initialize(host, token)
       @host = host
       @token = token
-      super(connection)
+      super(Models::Blob.builder(self))
     end
 
     def connection
