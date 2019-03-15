@@ -29,6 +29,12 @@ module FlightCache
   module Models
     class Blob < Model
       builder_class do
+        def get(id)
+          build do |con|
+            con.get("/blobs/#{id}").body.data
+          end
+        end
+
         def index_by_tag(tag)
           client.gets_by_tag(tag).body.data
         end
