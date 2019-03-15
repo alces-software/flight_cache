@@ -46,6 +46,17 @@ module FlightCache
         def download(id)
           client.connection.get(join(id, 'download')).body
         end
+
+        def upload(container_id, name, io)
+          path = Container.builder(client)
+                          .join(container_id, 'upload', name)
+          build do |con|
+            res = con.post(path, io.read) do |req|
+              req.headers['Content-Type'] = 'application/octet-stream'
+            end
+            res.body.data
+          end
+        end
       end
 
       data_id

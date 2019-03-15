@@ -88,7 +88,7 @@ class FlightCacheCli
     act(c) do |id, filepath|
       io = File.open(filepath, 'r')
       name = File.basename(filepath)
-      pp client.connection.upload_to_container_id(id, name, io).body.to_h
+      pp FlightCache::Models::Blob.builder(client).upload(id, name, io).to_h
     end
   end
 end

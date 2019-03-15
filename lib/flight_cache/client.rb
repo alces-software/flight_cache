@@ -79,26 +79,5 @@ module FlightCache
     def token
       (v = @token).to_s.empty? ? (raise 'No token given'): v
     end
-
-    def blob
-      Models::Blob.builder(self)
-    end
-
-    def container
-      Models::Container.builder(self)
-    end
-
-    def upload_to_container_id(id, name, io)
-      upload_path = container_path(id, 'upload', name)
-      post(upload_path, io.read) do |req|
-        req.headers['Content-Type'] = 'application/octet-stream'
-      end
-    end
-
-    private
-
-    def container_path(id, *path)
-      File.join('/containers', id, *path)
-    end
   end
 end

@@ -29,9 +29,7 @@ module FlightCache
   module Models
     class Container < Model
       builder_class do
-        def show(id)
-          client.get_container_by_id(id).body.data
-        end
+        api_name 'containers'
       end
 
       data_id
