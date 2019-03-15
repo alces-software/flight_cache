@@ -32,6 +32,10 @@ module FlightCache
     include Hashie::Extensions::Dash::Coercion
 
     class Builder < SimpleDelegator
+      def self.api_name(name = nil)
+        @api_name ||= name
+      end
+
       attr_reader :client
 
       def initialize(client)
@@ -41,6 +45,10 @@ module FlightCache
 
       def klass
         raise NotImplementedError
+      end
+
+      def join(id, *parts)
+        "/#{self.class.api_name}/#{id}/#{parts.join('/')}"
       end
 
       def build

@@ -29,22 +29,22 @@ module FlightCache
   module Models
     class Blob < Model
       builder_class do
+        api_name 'blobs'
+
         def get(id)
           build do |con|
-            con.get("/blobs/#{id}").body.data
+            con.get(join(id)).body.data
           end
         end
 
-        def index_by_tag(tag)
-          client.gets_by_tag(tag).body.data
-        end
-
-        def show(id)
-          client.get_by_id(id).body.data
+        def list(tag:)
+          coerce_build do |con|
+            con.get("/tags/#{tag}/blobs").body.data
+          end
         end
 
         def download(id)
-          client.download_by_id(id).body
+          client.connection.get(join(id, 'download')).body
         end
       end
 

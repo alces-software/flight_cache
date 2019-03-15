@@ -62,15 +62,7 @@ class FlightCacheCli
     c.syntax = 'download ID'
     c.description = 'Download the blob by id'
     act(c) do |id|
-      print client.blob.download(id)
-    end
-  end
-
-  command :container do |c|
-    c.syntax = 'container ID'
-    c.description = 'Get the metedata for a particular container'
-    act(c) do |id|
-      pp client.container.show(id).to_h
+      print FlightCache::Models::Blob.builder(client).download(id)
     end
   end
 
@@ -86,7 +78,7 @@ class FlightCacheCli
     c.syntax = 'tag:blobs TAG'
     c.description = "Get all the user blobs' meteadata for a particular tag"
     act(c) do |tag|
-      pp client.blob.index_by_tag(tag).map(&:to_h)
+      pp FlightCache::Models::Blob.builder(client).list(tag: tag).map(&:to_h)
     end
   end
 

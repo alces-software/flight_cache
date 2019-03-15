@@ -88,27 +88,11 @@ module FlightCache
       Models::Container.builder(self)
     end
 
-    def get_by_id(id)
-      get("/blobs/#{id}")
-    end
-
-    def download_by_id(id)
-      get("/blobs/#{id}/download")
-    end
-
-    def get_container_by_id(id)
-      get(container_path(id))
-    end
-
     def upload_to_container_id(id, name, io)
       upload_path = container_path(id, 'upload', name)
       post(upload_path, io.read) do |req|
         req.headers['Content-Type'] = 'application/octet-stream'
       end
-    end
-
-    def gets_by_tag(tag)
-      get(File.join("/tags/#{tag}/blobs"))
     end
 
     private
