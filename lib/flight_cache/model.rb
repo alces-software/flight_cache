@@ -91,7 +91,7 @@ module FlightCache
 
     def self.data_id
       property :id,
-               required: :complete?,
+               required: true,
                from: :__data__,
                with: lambda { |d| d&.id }
     end
@@ -112,7 +112,6 @@ module FlightCache
     # end
 
     property :__data__
-    property :complete?, default: false
 
     def to_h
       super().dup.tap { |h| h.delete(:__data__) }
