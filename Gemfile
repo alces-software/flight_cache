@@ -29,14 +29,5 @@ source "https://rubygems.org"
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
-gem 'commander', github: 'alces-software/commander'
-
-group :development do
-  gem 'pry'
-  gem 'pry-byebug'
-end
-
-gem "faraday", "~> 0.15.4"
-gem "faraday_middleware", "~> 0.13.1"
-gem 'hashie'
+gemspec
 

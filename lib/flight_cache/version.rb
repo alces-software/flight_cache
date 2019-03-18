@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 #
@@ -26,15 +25,6 @@
 # ==============================================================================
 #
 
-root_dir = File.expand_path(File.join(__dir__, '..'))
-$LOAD_PATH << File.join(root_dir, 'lib')
-
-ENV['BUNDLE_GEMFILE'] ||= File.join(root_dir, 'Gemfile')
-
-require 'rubygems'
-require 'bundler/setup'
-
-require 'flight_cache_cli'
-
-FlightCacheCli.run! if $PROGRAM_NAME == __FILE__
-
+module FlightCache
+  VERSION = '0.3.0'
+end
