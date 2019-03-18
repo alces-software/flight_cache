@@ -25,20 +25,5 @@
 # ==============================================================================
 #
 
-task :setup do
-  $LOAD_PATH << File.join(__dir__, 'lib')
-  ENV['BUNDLE_GEMFILE'] ||= File.join(__dir__, 'Gemfile')
-
-  require 'rubygems'
-  require 'bundler/setup'
-
-  require 'flight_cache'
-end
-
-task console: :setup do
-  require 'pry'
-  require 'pry-byebug'
-
-  binding.pry
-end
-
+require 'flight_cache/client'
+require 'flight_cache/models'
