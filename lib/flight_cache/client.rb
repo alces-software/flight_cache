@@ -52,23 +52,20 @@ module FlightCache
     def initialize(host, token)
       @host = host
       @token = token
-      super(Models::Blob.builder(self))
     end
 
     def connection
-      @connection ||= begin
-        Faraday::Connection.new(host) do |conn|
-          conn.token_auth(token)
-          conn.request :json
+      Faraday::Connection.new(host) do |conn|
+        conn.token_auth(token)
+        conn.request :json
 
-          conn.use FaradayMiddleware::FollowRedirects
-          conn.use RaiseError
+        conn.use FaradayMiddleware::FollowRedirects
+        conn.use RaiseError
 
-          conn.use FaradayMiddleware::Mashify
-          conn.response :json, :content_type => /\bjson$/
+        conn.use FaradayMiddleware::Mashify
+        conn.response :json, :content_type => /\bjson$/
 
-          conn.adapter Faraday.default_adapter
-        end
+        conn.adapter Faraday.default_adapter
       end
     end
 
@@ -78,6 +75,14 @@ module FlightCache
 
     def token
       (v = @token).to_s.empty? ? (raise 'No token given'): v
+    end
+
+    def blobs
+      Models::Blob.builder(self)
+    end
+
+    def containers
+      Models::Container.builder(self)
     end
   end
 end
