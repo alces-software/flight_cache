@@ -20,12 +20,16 @@
 # along with Flight Cache.  If not, see <http://www.gnu.org/licenses/>.
 #
 # For more information on the Flight Cache, please visit:
-# https://github.com/alces-software/flight-cache
-# https://github.com/alces-software/flight-cache-cli
+# https://github.com/alces-software/flight_cache
 # ==============================================================================
 #
 
-require 'flight_cache/model'
 
-require 'flight_cache/models/blob'
-require 'flight_cache/models/container'
+module FlightCache
+  class PathHelper
+    def tag(tag_name, *parts)
+      ["tags", tag_name, *parts].join('/')
+    end
+  end
+end
+

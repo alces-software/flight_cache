@@ -20,26 +20,46 @@
 # along with Flight Cache.  If not, see <http://www.gnu.org/licenses/>.
 #
 # For more information on the Flight Cache, please visit:
-# https://github.com/alces-software/flight-cache
-# https://github.com/alces-software/flight-cache-cli
+# https://github.com/alces-software/flight_cache
 # ==============================================================================
 #
+
+require 'flight_cache/error'
 
 module FlightCache
   module Models
     class Container < Model
       builder_class do
         api_name 'containers'
+        api_type 'container'
+
+        def get(id: nil, tag: nil, scope: nil)
+          build do |c|
+            if id
+              c.get(join(id))
+            elsif tag
+              c.get(paths.tag(tag, 'container'), scope: scope)
+            else
+              raise BadRequestError, <<~ERROR.chomp
+                Please specify either the container :id or :tag
+              ERROR
+            end.body.data
+          end
+        end
 
         def list(tag:)
-          coerce_build do |con|
-            con.get("/tags/#{tag}").body.data
+          build_enum do |con|
+            con.get(paths.tag(tag)).body.data
           end
         end
       end
 
       data_id
       data_attribute :tag
+
+      def upload(*a)
+        builder.client.blobs.uploader(*a).to_container(id: self.id)
+      end
     end
   end
 end

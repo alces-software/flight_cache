@@ -26,6 +26,7 @@
 #
 
 require 'hashie'
+require 'flight_cache/path_helper'
 
 module FlightCache
   class Model < Hashie::Trash
@@ -34,6 +35,10 @@ module FlightCache
     class Builder < SimpleDelegator
       def self.api_name(name = nil)
         @api_name ||= name
+      end
+
+      def self.api_type(type = nil)
+        @api_type ||= type
       end
 
       attr_reader :client
@@ -52,11 +57,26 @@ module FlightCache
       end
 
       def build
-        super(yield(client.connection))
+        data_to_model(yield(client.connection))
       end
 
-      def coerce_build
-        super(yield(client.connection))
+      def build_enum
+        yield(client.connection).map { |d| data_to_model(d) }
+      end
+
+      private
+
+      def data_to_model(data)
+        unless data.type == self.class.api_type
+          raise ModelTypeError, <<~ERROR.chomp
+            Was expecting a #{self.class.api_type} but got #{data.type}
+          ERROR
+        end
+        klass.new(__data__: data, __builder__: self)
+      end
+
+      def paths
+        PathHelper.new
       end
     end
 
@@ -72,14 +92,6 @@ module FlightCache
 
     def self.builder(client)
       builder_class.new(client)
-    end
-
-    def self.build(data)
-      new(__data__: data)
-    end
-
-    def self.coerce_build(data)
-      Models.coerce_build(data, klass: self)
     end
 
     def self.data_attribute(key, from: nil)
@@ -112,6 +124,7 @@ module FlightCache
     # end
 
     property :__data__
+    property :__builder__
 
     def to_h
       super().dup.tap { |h| h.delete(:__data__) }
@@ -119,6 +132,15 @@ module FlightCache
 
     def data?
       !!__data__
+    end
+
+    private
+
+    def builder
+      return __builder__ if __builder__
+      raise MissingBuilderError, <<~ERROR.chomp
+        Can not make any additional requests as the 'builder' is missing
+      ERROR
     end
   end
 end

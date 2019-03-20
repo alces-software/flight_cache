@@ -20,42 +20,57 @@
 # along with Flight Cache.  If not, see <http://www.gnu.org/licenses/>.
 #
 # For more information on the Flight Cache, please visit:
-# https://github.com/alces-software/flight-cache
-# https://github.com/alces-software/flight-cache-cli
+# https://github.com/alces-software/flight_cache
 # ==============================================================================
 #
 
 module FlightCache
   module Models
     class Blob < Model
+      Uploader = Struct.new(:builder, :filename, :io) do
+        def to_container(id:)
+          path = container_upload_path(id)
+          builder.build do |con|
+            con.post(path, io.read) do |req|
+              req.headers['Content-Type'] = 'application/octet-stream'
+            end.body.data
+          end
+        end
+
+        def to_tag(tag:, scope: nil)
+          ctr = builder.client.containers.get(tag: tag, scope: scope)
+          to_container(id: ctr.id)
+        end
+
+        private
+
+        def container_upload_path(container_id)
+          builder.client.containers.join(container_id, 'upload', filename)
+        end
+      end
+
       builder_class do
+        api_type 'blob'
         api_name 'blobs'
 
-        def get(id)
+        def get(id:)
           build do |con|
             con.get(join(id)).body.data
           end
         end
 
-        def list(tag:)
-          coerce_build do |con|
-            con.get("/tags/#{tag}/blobs").body.data
+        def list(tag:, scope: nil)
+          build_enum do |c|
+            c.get(paths.tag(tag, 'blobs'), scope: scope).body.data
           end
         end
 
-        def download(id)
+        def download(id:)
           client.connection.get(join(id, 'download')).body
         end
 
-        def upload(container_id, name, io)
-          path = Container.builder(client)
-                          .join(container_id, 'upload', name)
-          build do |con|
-            res = con.post(path, io.read) do |req|
-              req.headers['Content-Type'] = 'application/octet-stream'
-            end
-            res.body.data
-          end
+        def uploader(filename:, io:)
+          Uploader.new(self, filename, io)
         end
       end
 
@@ -63,6 +78,10 @@ module FlightCache
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
+
+      def download
+        builder.download(id: self.id)
+      end
     end
   end
 end

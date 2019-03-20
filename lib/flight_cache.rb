@@ -25,42 +25,5 @@
 # ==============================================================================
 #
 
-module FlightCache
-  # Generic FlightCache Error
-  class Error < StandardError; end
-
-  # VerbotenError
-  # Use: Archetype class for permission denied errors
-  # Code: 40* (ish)
-  class VerbotenError < Error
-    MESSAGE = <<~ERROR.chomp
-      You do not have permission to view this content
-    ERROR
-
-    def initialize(raw = nil)
-      super((raw.nil? || raw.empty?) ? MESSAGE : raw)
-    end
-  end
-
-  # UnauthorizedError
-  # Use: Accessed denied due to failing authentication
-  # Code: 401
-  class UnauthorizedError < VerbotenError; end
-
-  # ForbiddenError
-  # Use: Accessed denied due to lack of permissions
-  # Code: 403
-  class ForbiddenError < VerbotenError; end
-
-  # ModelTypeError
-  # Use: The server response does not match the model type
-  class ModelTypeError < Error; end
-
-  # BadRequestError
-  # Use: The client could not make the request for some reason
-  class BadRequestError < Error; end
-
-  # MissingBuilderError
-  # Use: A model can not make an additional request as it is mising its builder
-  class MissingBuilderError < Error; end
-end
+require 'flight_cache/client'
+require 'flight_cache/models'
