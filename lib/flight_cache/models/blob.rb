@@ -29,8 +29,8 @@ module FlightCache
   module Models
     class Blob < Model
       Uploader = Struct.new(:builder, :filename, :io) do
-        def to_container(container_id)
-          path = container_upload_path(container_id)
+        def to_container(id:)
+          path = container_upload_path(id)
           builder.build do |con|
             res = con.post(path, io.read) do |req|
               req.headers['Content-Type'] = 'application/octet-stream'
@@ -50,7 +50,7 @@ module FlightCache
       builder_class do
         api_name 'blobs'
 
-        def get(id)
+        def get(id:)
           build do |con|
             con.get(join(id)).body.data
           end
@@ -62,12 +62,12 @@ module FlightCache
           end
         end
 
-        def download(id)
+        def download(id:)
           client.connection.get(join(id, 'download')).body
         end
 
-        def uploader(name, io)
-          Uploader.new(self, name, io)
+        def uploader(filename:, io:)
+          Uploader.new(self, filename, io)
         end
       end
 
