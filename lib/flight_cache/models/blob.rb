@@ -20,8 +20,7 @@
 # along with Flight Cache.  If not, see <http://www.gnu.org/licenses/>.
 #
 # For more information on the Flight Cache, please visit:
-# https://github.com/alces-software/flight-cache
-# https://github.com/alces-software/flight-cache-cli
+# https://github.com/alces-software/flight_cache
 # ==============================================================================
 #
 
@@ -58,7 +57,7 @@ module FlightCache
 
         def list(tag:, scope: nil)
           coerce_build do |c|
-            c.get("/tags/#{tag}/blobs", scope: scope).body.data
+            c.get(paths.tag(tag, 'blobs'), scope: scope).body.data
           end
         end
 

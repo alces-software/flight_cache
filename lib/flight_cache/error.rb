@@ -55,4 +55,8 @@ module FlightCache
   # ModelTypeError
   # Use: The server response does not match the model type
   class ModelTypeError < Error; end
+
+  # BadRequestError
+  # Use: The client could not make the request for some reason
+  class BadRequestError < Error; end
 end

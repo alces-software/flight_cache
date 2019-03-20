@@ -24,37 +24,12 @@
 # ==============================================================================
 #
 
-require 'flight_cache/error'
 
 module FlightCache
-  module Models
-    class Container < Model
-      builder_class do
-        api_name 'containers'
-
-        def get(id: nil, tag: nil, scope: nil)
-          build do |c|
-            if id
-              c.get(join(id))
-            elsif tag
-              c.get(paths.tag(tag, 'container'), scope: scope)
-            else
-              raise BadRequestError, <<~ERROR.chomp
-                Please specify either the container :id or :tag
-              ERROR
-            end.body.data
-          end
-        end
-
-        def list(tag:)
-          coerce_build do |con|
-            con.get(paths.tag(tag)).body.data
-          end
-        end
-      end
-
-      data_id
-      data_attribute :tag
+  class PathHelper
+    def tag(tag_name, *parts)
+      ["tags", tag_name, *parts].join('/')
     end
   end
 end
+

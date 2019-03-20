@@ -26,6 +26,7 @@
 #
 
 require 'hashie'
+require 'flight_cache/path_helper'
 
 module FlightCache
   class Model < Hashie::Trash
@@ -57,6 +58,12 @@ module FlightCache
 
       def coerce_build
         super(yield(client.connection))
+      end
+
+      private
+
+      def paths
+        PathHelper.new
       end
     end
 
