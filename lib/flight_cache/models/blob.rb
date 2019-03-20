@@ -31,18 +31,21 @@ module FlightCache
         def to_container(id:)
           path = container_upload_path(id)
           builder.build do |con|
-            res = con.post(path, io.read) do |req|
+            con.post(path, io.read) do |req|
               req.headers['Content-Type'] = 'application/octet-stream'
-            end
-            res.body.data
+            end.body.data
           end
+        end
+
+        def to_tag(tag:, scope: nil)
+          ctr = builder.client.containers.get(tag: tag, scope: scope)
+          to_container(id: ctr.id)
         end
 
         private
 
         def container_upload_path(container_id)
-          Container.builder(builder.client)
-                   .join(container_id, 'upload', filename)
+          builder.client.containers.join(container_id, 'upload', filename)
         end
       end
 
