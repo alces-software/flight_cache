@@ -31,6 +31,12 @@ module FlightCache
       builder_class do
         api_name 'containers'
 
+        def get(id:)
+          build do |c|
+            c.get(join(id)).body.data
+          end
+        end
+
         def list(tag:)
           coerce_build do |con|
             con.get("/tags/#{tag}").body.data
