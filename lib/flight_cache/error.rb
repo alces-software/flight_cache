@@ -59,4 +59,8 @@ module FlightCache
   # BadRequestError
   # Use: The client could not make the request for some reason
   class BadRequestError < Error; end
+
+  # MissingBuilderError
+  # Use: A model can not make an additional request as it is mising its builder
+  class MissingBuilderError < Error; end
 end

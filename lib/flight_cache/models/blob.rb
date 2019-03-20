@@ -78,6 +78,10 @@ module FlightCache
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
+
+      def download
+        builder.download(id: self.id)
+      end
     end
   end
 end

@@ -69,10 +69,10 @@ module FlightCache
       def data_to_model(data)
         unless data.type == self.class.api_type
           raise ModelTypeError, <<~ERROR.chomp
-            Was expecting a #{klass} but got #{model.class}
+            Was expecting a #{self.class.api_type} but got #{data.type}
           ERROR
         end
-        klass.new(__data__: data)
+        klass.new(__data__: data, __builder__: self)
       end
 
       def paths
@@ -124,6 +124,7 @@ module FlightCache
     # end
 
     property :__data__
+    property :__builder__
 
     def to_h
       super().dup.tap { |h| h.delete(:__data__) }
@@ -131,6 +132,15 @@ module FlightCache
 
     def data?
       !!__data__
+    end
+
+    private
+
+    def builder
+      return __builder__ if __builder__
+      raise MissingBuilderError, <<~ERROR.chomp
+        Can not make any additional requests as the 'builder' is missing
+      ERROR
     end
   end
 end

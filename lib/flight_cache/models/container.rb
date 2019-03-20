@@ -56,6 +56,10 @@ module FlightCache
 
       data_id
       data_attribute :tag
+
+      def upload(*a)
+        builder.client.blobs.uploader(*a).to_container(id: self.id)
+      end
     end
   end
 end
