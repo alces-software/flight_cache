@@ -21,6 +21,62 @@ require 'flight_cache'
 client = FlightCache::Client.new(HOST_ADDRESS, FLIGHT_SSO_TOKEN)
 ```
 
+### Details on scoping
+
+Through out this guide, there will be references to a `scope`. This used to
+narrow down the number of models depending on how they are owned.
+
+Each model can have exactly one "owner". `Container`s directly have an owner,
+where `Blob`s have an owner via its container.
+
+Each `Container` can have exactly one owner which will determine how it is
+scoped:
+1. A user,            `scope = :user`,
+2. A group,           `scope = :group`,
+3. The public group,  `scope = :public`\*
+4. No scope given,    See defaults below
+5. Any other value,   Consider the same as no scope given
+
+\* In theory a user could belong to the public group, making their `:group` and
+`:public` scopes equivalent. In practice however, this should never happen.
+
+Because each owner (`user`/`group`/`public group`) maintains its own set of
+`Container`s/models, the scope is a easy way to toggle between them.
+
+#### Scoping Behaviour - Get (single model)
+
+*NOTE*: This section mainly refers to getting a `Container`. It is not possible to
+get a `Blob` using the scope.
+
+Get requests (that fetch a single model) will default to using the `:user`
+scope. The `:user` scope will return the model that belongs to the user.
+
+By setting the scope to `:group`, it will trigger the model that belongs to
+the user's group to be returned. The `:public` scope is similar but returns
+the model that belongs to the public group.
+
+#### Scoping Behaviour - List (multiple models)
+
+The toggling behaviour of the `scope` is the same when listing multiple models,
+with exception of the default.
+
+This means the `:user` scope will still only return models that the user directly
+owns. Similarly, the `:group` and `:public` scopes only return models that are
+owned by the corresponding group.
+
+However there is no default scope when listing. This allows listing of all
+models in all ownership scopes.
+
+### Details on tagging
+
+In addition to a `scope`, each model has a `tag`. Once again, `Container`s have
+tags directly where a `Blob` inherits it via its container. The valid tags
+depends on the server setup and are thus application specific.
+
+Each owner may only own one `Container` of each `tag`. This means its possible
+to resolve individual containers by its `tag` and `owner`. It also limits a
+single container to each `tag` and user's ownership scope.
+
 ### Using the "Builders" (sub clients)
 
 The client has been organised into two sub clients: `blobs` and `containers`.
@@ -73,7 +129,6 @@ return all the blobs the user has access to; filtered by tag.
 This will list all the blobs in all the users containers of that type. The
 `:scope` key can be used to filter the blobs depending on user permissions.
 
-See below for a full discussion on the valid scope
 ```
 > client.blobs.list(tag:, scope:)
 => [...] # Only return blobs with the specified tag and scope
@@ -110,8 +165,7 @@ be created as an abstraction to the files details. It must be given the
 ```
 
 Then the file is uploaded to a container either by `:id` or `:tag`. The `:scope`
-is optional when used with a `:tag`. See discussion about the `:scope` for more
-details.
+is optional when used with a `:tag`.
 
 ```
 # The following methods upload to:
