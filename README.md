@@ -64,7 +64,7 @@ Blobs can also be filtered by tag by using the `list(tag:)` method. It will
 return all the blobs the user has access to; filtered by tag.
 
 ```
-> blobs = client.blobs.list(tag: <tag>)
+> blobs = client.blobs.list(tag:)
 => [<#FlightCache::Models::Blob:..>, ...]
 ```
 
@@ -73,7 +73,7 @@ This will list all the blobs in all the users containers of that type. The
 
 See below for a full discussion on the valid scope
 ```
-> client.blobs.list(tag: <tag>, scope: <scope>)
+> client.blobs.list(tag:, scope:)
 => [...] # Only return blobs with the specified tag and scope
 ```
 
@@ -96,6 +96,25 @@ the instance method:
 => ... # As above
 ```
 
-### Uploading
+#### Uploading
 
-There is an `upload` method on the client. See code for details.
+Uploading a blob is a two step process. Firstly, an `Uploader` struct needs to
+be created as an abstraction to the files details. It must be given the
+`:filename` and an `:io` containing the file data.
+
+```
+> uploader = client.blobs.uploader(filename:, io:)
+=> #<struct FlightCache::Models::Blob::Uploader:..>
+```
+
+Then the file is uploaded to a container either by `:id` or `:tag`. The `:scope`
+is optional when used with a `:tag`. See discussion about the `:scope` for more
+details.
+
+```
+# The following methods upload to:
+> uploader.to_container(id:)    # container given by :id
+> uploader.to_tag(tag:)         # the users tagged container
+> uploader.to_tag(tag: scope:)  # the tagged container given by scope
+```
+
