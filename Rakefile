@@ -39,6 +39,7 @@ task console: :setup do
   require 'pry'
   require 'pry-byebug'
 
+  client = FlightCache::Client.new(ENV['FLIGHT_CACHE_HOST'], ENV['FLIGHT_SSO_TOKEN'])
   binding.pry
 end
 

@@ -30,7 +30,7 @@ require 'flight_cache/error'
 require 'flight_cache/models'
 
 module FlightCache
-  class Client < DelegateClass(Faraday::Connection)
+  class Client
     class RaiseError < Faraday::Response::RaiseError
       def call(req)
         @app.call(req).on_complete do |res|

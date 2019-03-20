@@ -57,9 +57,8 @@ module FlightCache
         end
 
         def list(tag:, scope: nil)
-          coerce_build do |con|
-            con.get("/tags/#{tag}/blobs", scope: scope)
-               .body.data
+          coerce_build do |c|
+            c.get("/tags/#{tag}/blobs", scope: scope).body.data
           end
         end
 
