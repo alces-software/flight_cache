@@ -50,6 +50,7 @@ module FlightCache
       end
 
       builder_class do
+        api_type 'blob'
         api_name 'blobs'
 
         def get(id:)
@@ -59,7 +60,7 @@ module FlightCache
         end
 
         def list(tag:, scope: nil)
-          coerce_build do |c|
+          build_enum do |c|
             c.get(paths.tag(tag, 'blobs'), scope: scope).body.data
           end
         end

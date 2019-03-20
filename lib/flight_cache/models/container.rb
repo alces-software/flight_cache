@@ -31,6 +31,7 @@ module FlightCache
     class Container < Model
       builder_class do
         api_name 'containers'
+        api_type 'container'
 
         def get(id: nil, tag: nil, scope: nil)
           build do |c|
@@ -47,7 +48,7 @@ module FlightCache
         end
 
         def list(tag:)
-          coerce_build do |con|
+          build_enum do |con|
             con.get(paths.tag(tag)).body.data
           end
         end

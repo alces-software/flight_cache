@@ -37,6 +37,10 @@ module FlightCache
         @api_name ||= name
       end
 
+      def self.api_type(type = nil)
+        @api_type ||= type
+      end
+
       attr_reader :client
 
       def initialize(client)
@@ -53,14 +57,23 @@ module FlightCache
       end
 
       def build
-        super(yield(client.connection))
+        data_to_model(yield(client.connection))
       end
 
-      def coerce_build
-        super(yield(client.connection))
+      def build_enum
+        yield(client.connection).map { |d| data_to_model(d) }
       end
 
       private
+
+      def data_to_model(data)
+        unless data.type == self.class.api_type
+          raise ModelTypeError, <<~ERROR.chomp
+            Was expecting a #{klass} but got #{model.class}
+          ERROR
+        end
+        klass.new(__data__: data)
+      end
 
       def paths
         PathHelper.new
@@ -79,14 +92,6 @@ module FlightCache
 
     def self.builder(client)
       builder_class.new(client)
-    end
-
-    def self.build(data)
-      new(__data__: data)
-    end
-
-    def self.coerce_build(data)
-      Models.coerce_build(data, klass: self)
     end
 
     def self.data_attribute(key, from: nil)

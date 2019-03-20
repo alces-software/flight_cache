@@ -27,22 +27,5 @@
 
 require 'flight_cache/model'
 
-module FlightCache
-  module Models
-    def self.coerce_build(data, klass: nil)
-      if data.is_a?(Array)
-        data.map { |d| coerce_build(d, klass: klass) }
-      else
-        const_get(data.type.capitalize).build(data).tap do |model|
-          next if klass.nil? || model.is_a?(klass)
-          raise ModelTypeError, <<~ERROR.chomp
-            Was expecting a #{klass} but got #{model.class}
-          ERROR
-        end
-      end
-    end
-  end
-end
-
 require 'flight_cache/models/blob'
 require 'flight_cache/models/container'
