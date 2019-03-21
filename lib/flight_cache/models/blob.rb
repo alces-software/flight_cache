@@ -67,8 +67,9 @@ module FlightCache
           end
         end
 
-        def download(id:)
-          open(client.connection.get(join(id, 'download')).headers["location"])
+        def download(id:, &b)
+          url = client.connection.get(join(id, 'download')).headers["location"]
+          open(url, &b)
         end
 
         def uploader(filename:, io:)
