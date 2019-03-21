@@ -59,7 +59,6 @@ module FlightCache
         conn.token_auth(token)
         conn.request :json
 
-        conn.use FaradayMiddleware::FollowRedirects
         conn.use RaiseError
 
         conn.use FaradayMiddleware::Mashify

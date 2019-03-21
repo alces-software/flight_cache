@@ -24,6 +24,8 @@
 # ==============================================================================
 #
 
+require 'open-uri'
+
 module FlightCache
   module Models
     class Blob < Model
@@ -66,7 +68,7 @@ module FlightCache
         end
 
         def download(id:)
-          client.connection.get(join(id, 'download')).body
+          open(client.connection.get(join(id, 'download')).headers["location"])
         end
 
         def uploader(filename:, io:)
