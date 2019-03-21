@@ -144,12 +144,15 @@ If the metadata model has already been fetched, then it can be downloaded using
 the instance method:
 
 ```
-> client.blobs.download(1)
-=> <#String:..> # Maybe a hashie? This needs to be clarified
+> client.blobs.download(id:)
+=> <#IO:...>
+
+> client.blobs.download(id:) { |io| ... }
+=> # Result of the block
 
 # Downloading via a get
 # NOTE: This will perform two request
-> client.blobs.get(1).download
+> client.blobs.get(id:).download
 => ... # As above
 ```
 
