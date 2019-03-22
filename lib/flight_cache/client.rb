@@ -83,5 +83,9 @@ class FlightCache
     def containers
       Models::Container.builder(self)
     end
+
+    def tags
+      Models::Tag.builder(self)
+    end
   end
 end

@@ -29,3 +29,4 @@ require 'flight_cache/model'
 
 require 'flight_cache/models/blob'
 require 'flight_cache/models/container'
+require 'flight_cache/models/tag'

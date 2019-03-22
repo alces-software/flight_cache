@@ -35,6 +35,10 @@ class FlightCache
     @client = Client.new(host_url, token)
   end
 
+  def tags
+    client.tags.list
+  end
+
   def blobs(tag, scope: nil)
     client.blobs.list(tag: tag, scope: scope)
   end

@@ -52,8 +52,8 @@ class FlightCache
         raise NotImplementedError
       end
 
-      def join(id, *parts)
-        "/#{self.class.api_name}/#{id}/#{parts.join('/')}"
+      def join(*parts)
+        "/#{self.class.api_name}/#{parts.join('/')}"
       end
 
       def build
@@ -127,7 +127,10 @@ class FlightCache
     property :__builder__
 
     def to_h
-      super().dup.tap { |h| h.delete(:__data__) }
+      super().dup.tap do |h|
+        h.delete(:__data__)
+        h.delete(:__builder__)
+      end
     end
 
     def data?
