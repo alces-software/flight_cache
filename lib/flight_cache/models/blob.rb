@@ -26,7 +26,7 @@
 
 require 'open-uri'
 
-module FlightCache
+class FlightCache
   module Models
     class Blob < Model
       Uploader = Struct.new(:builder, :filename, :io) do
@@ -63,7 +63,7 @@ module FlightCache
 
         def list(tag:, scope: nil)
           build_enum do |c|
-            c.get(paths.tag(tag, 'blobs'), scope: scope).body.data
+            c.get(paths.tagged(tag, 'blobs'), scope: scope).body.data
           end
         end
 
@@ -81,6 +81,8 @@ module FlightCache
       data_attribute :checksum
       data_attribute :filename
       data_attribute :size, from: :byte_size
+      data_attribute :tag_name
+      data_attribute :scope
 
       def download
         builder.download(id: self.id)

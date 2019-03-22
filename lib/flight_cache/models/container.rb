@@ -26,7 +26,7 @@
 
 require 'flight_cache/error'
 
-module FlightCache
+class FlightCache
   module Models
     class Container < Model
       builder_class do
@@ -38,7 +38,7 @@ module FlightCache
             if id
               c.get(join(id))
             elsif tag
-              c.get(paths.tag(tag, 'container'), scope: scope)
+              c.get(paths.tagged(tag, 'container'), scope: scope)
             else
               raise BadRequestError, <<~ERROR.chomp
                 Please specify either the container :id or :tag
@@ -49,13 +49,14 @@ module FlightCache
 
         def list(tag:)
           build_enum do |con|
-            con.get(paths.tag(tag)).body.data
+            con.get(paths.tagged(tag)).body.data
           end
         end
       end
 
       data_id
-      data_attribute :tag
+      data_attribute :tag_name
+      data_attribute :scope
 
       def upload(*a)
         builder.client.blobs.uploader(*a).to_container(id: self.id)

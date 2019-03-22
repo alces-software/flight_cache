@@ -29,7 +29,7 @@ require 'faraday_middleware'
 require 'flight_cache/error'
 require 'flight_cache/models'
 
-module FlightCache
+class FlightCache
   class Client
     class RaiseError < Faraday::Response::RaiseError
       def call(req)
@@ -82,6 +82,10 @@ module FlightCache
 
     def containers
       Models::Container.builder(self)
+    end
+
+    def tags
+      Models::Tag.builder(self)
     end
   end
 end

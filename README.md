@@ -12,14 +12,84 @@ rake console
 
 ## Usage
 
-### Creating A Client
+### Creating the cache API interface
 
-The client requires your flight\_sso\_token and the servers host address
+The interface requires your flight\_sso\_token and the servers host address
 
 ```
 require 'flight_cache'
-client = FlightCache::Client.new(HOST_ADDRESS, FLIGHT_SSO_TOKEN)
+cache = FlightCache.new(HOST_ADDRESS, FLIGHT_SSO_TOKEN)
 ```
+
+### Getting and Downloading a Blob
+
+A file (aka a `Blob`) can be retrieved using the `blob` method. This will
+return the metadata `Blob` object. To download the `Blob` please use the
+`download` methods. The `download` return an `IO` with the files data\*.
+
+The `FlightCache#get` and `FlightCache#download` methods both tag the `Blob`
+id.
+
+```
+> cache.blob(<id>)
+=> <#FlightCache::Models::Blob:..>
+
+> cache.download(<id>)
+=> <#IO:..>
+
+> cache.blob(<id>).download
+=> <#IO:..>
+```
+
+\*NOTE: The downloaded `IO` will either be a `StringIO` or `Tempfile`
+depending  on the file size
+
+### List All the Tags
+
+The `tags` method will return a list of all the available tags. See below for
+further details on tagging.
+
+```
+> cache.tags
+=> [<#FlightCache::Models::Tag:..>]
+```
+
+### Listing Blobs by Tag and Scope
+
+The `blobs` method will return a list of `Blob`s of a particular tag. The
+`tag_name` must be a `String`. Optionally, the list can be further filtered
+by `scope`. See below for further explanations on tagging and scoping.
+
+If the `scope` is not supplied, it will retrieve `Blobs` from all the users
+scopes.
+
+```
+> cache.blobs(<tag_name>)
+=> [<#FlightCache::Models::Blob:..>, ..] # List all blobs of a particular tag
+
+> cache.blobs(<tag_name>, scope: <scope_value>)
+=> [<#FlightCache::Models::Blob:..>, ..] # Filter the blobs further by scope
+```
+
+### Uploading a blob
+
+New blobs can be uploaded from an `IO` using the `upload` method. The upload
+needs to be given a `name` and a `tag:` to upload to. By default, the blobs is
+uploaded into the `:user` scope. The optional `scope:` key can be used to
+change this.
+
+```
+> cache.upload(<name>, <io>, tag: <tag_name>)
+=> <#FlightCache::Models::Blob:...> # Uploads the blob into the :user scope
+
+> cache.upload(<name>, <io>, tag: <tag_name>, scope: <scope>)
+=> <#FlightCache::Models::Blob:...> # Uploads the blob into the specified scope
+```
+
+## Explanatory Details
+
+The following is an overview on how the `scoping` and `tagging` features of
+FlightCache work.
 
 ### Details on scoping
 
@@ -76,6 +146,20 @@ depends on the server setup and are thus application specific.
 Each owner may only own one `Container` of each `tag`. This means its possible
 to resolve individual containers by its `tag` and `owner`. It also limits a
 single container to each `tag` and user's ownership scope.
+
+## Advanced Usage - FlightCache::Client
+
+The following is the summary on the underling client that makes the requests.
+It provides further features that are not available in the basic syntax above.
+
+### Creating A Client
+
+The client requires your flight\_sso\_token and the servers host address
+
+```
+require 'flight_cache'
+client = FlightCache::Client.new(HOST_ADDRESS, FLIGHT_SSO_TOKEN)
+```
 
 ### Using the "Builders" (sub clients)
 
@@ -175,6 +259,26 @@ is optional when used with a `:tag`.
 > uploader.to_container(id:)    # container given by :id
 > uploader.to_tag(tag:)         # the users tagged container
 > uploader.to_tag(tag: scope:)  # the tagged container given by scope
+```
+
+### Tag Builder
+
+#### Getting a Tag
+
+Tags can only be retrieved individually by `:id`:
+
+```
+> client.tags.get(id:)
+=> <#FlightCache::Models::Tag:..>
+```
+
+#### Listing Tags
+
+To get the complete list of tags, use the `list` method:
+
+```
+> client.tags.list
+=> [<#FlightCache::Models::Tag:..>, ...]
 ```
 
 ### Container Builder
