@@ -44,6 +44,16 @@ id.
 \*NOTE: The downloaded `IO` will either be a `StringIO` or `Tempfile`
 depending  on the file size
 
+### List All the Tags
+
+The `tags` method will return a list of all the available tags. See below for
+further details on tagging.
+
+```
+> cache.tags
+=> [<#FlightCache::Models::Tag:..>]
+```
+
 ### Listing Blobs by Tag and Scope
 
 The `blobs` method will return a list of `Blob`s of a particular tag. The
@@ -249,6 +259,26 @@ is optional when used with a `:tag`.
 > uploader.to_container(id:)    # container given by :id
 > uploader.to_tag(tag:)         # the users tagged container
 > uploader.to_tag(tag: scope:)  # the tagged container given by scope
+```
+
+### Tag Builder
+
+#### Getting a Tag
+
+Tags can only be retrieved individually by `:id`:
+
+```
+> client.tags.get(id:)
+=> <#FlightCache::Models::Tag:..>
+```
+
+#### Listing Tags
+
+To get the complete list of tags, use the `list` method:
+
+```
+> client.tags.list
+=> [<#FlightCache::Models::Tag:..>, ...]
 ```
 
 ### Container Builder
