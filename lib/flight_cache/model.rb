@@ -28,7 +28,7 @@
 require 'hashie'
 require 'flight_cache/path_helper'
 
-module FlightCache
+class FlightCache
   class Model < Hashie::Trash
     include Hashie::Extensions::Dash::Coercion
 

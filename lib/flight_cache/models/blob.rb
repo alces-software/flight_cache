@@ -26,7 +26,7 @@
 
 require 'open-uri'
 
-module FlightCache
+class FlightCache
   module Models
     class Blob < Model
       Uploader = Struct.new(:builder, :filename, :io) do

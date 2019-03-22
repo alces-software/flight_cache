@@ -26,7 +26,7 @@
 
 require 'flight_cache/error'
 
-module FlightCache
+class FlightCache
   module Models
     class Container < Model
       builder_class do

@@ -25,7 +25,7 @@
 #
 
 
-module FlightCache
+class FlightCache
   class PathHelper
     def tagged(tag_name, *parts)
       ["tagged", tag_name, *parts].join('/')

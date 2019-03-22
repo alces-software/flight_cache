@@ -25,7 +25,7 @@
 # ==============================================================================
 #
 
-module FlightCache
+class FlightCache
   # Generic FlightCache Error
   class Error < StandardError; end
 
