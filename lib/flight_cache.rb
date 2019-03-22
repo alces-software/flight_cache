@@ -27,3 +27,27 @@
 
 require 'flight_cache/client'
 require 'flight_cache/models'
+
+class FlightCache
+  attr_reader :client
+
+  def initialize(host_url, token)
+    @client = Client.new(host_url, token)
+  end
+
+  def blobs(tag, scope: nil)
+    client.blobs.list(tag: tag, scope: scope)
+  end
+
+  def blob(id)
+    client.blobs.get(id: id)
+  end
+
+  def upload(name, io, tag:, scope: nil)
+    client.blobs.uploader(filname: name, io: io).to_tag(tag: tag, scope: scope)
+  end
+
+  def download(id)
+    client.blobs.download(id: id)
+  end
+end
