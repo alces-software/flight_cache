@@ -37,8 +37,8 @@ class FlightCache
       You do not have permission to view this content
     ERROR
 
-    def initialize(raw = nil)
-      super((raw.nil? || raw.empty?) ? MESSAGE : raw)
+    def initialize(raw = MESSAGE)
+      super
     end
   end
 
@@ -51,6 +51,17 @@ class FlightCache
   # Use: Accessed denied due to lack of permissions
   # Code: 403
   class ForbiddenError < VerbotenError; end
+
+  # NotFoundError
+  # Use: The resource could not be located
+  # Code: 404
+  class NotFoundError < Error
+    MESSAGE = 'Resource not found'
+
+    def initialize(msg = MESSAGE)
+      super
+    end
+  end
 
   # ModelTypeError
   # Use: The server response does not match the model type
