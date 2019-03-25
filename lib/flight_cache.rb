@@ -48,7 +48,7 @@ class FlightCache
   end
 
   def upload(name, io, tag:, scope: nil)
-    client.blobs.uploader(filname: name, io: io).to_tag(tag: tag, scope: scope)
+    client.blobs.uploader(filename: name, io: io).to_tag(tag: tag, scope: scope)
   end
 
   def download(id)
