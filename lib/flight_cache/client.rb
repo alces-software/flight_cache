@@ -43,7 +43,7 @@ class FlightCache
             if req.body.respond_to?(:error)
               raise NotFoundError, req.body.error
             else
-              raise NotFoundError
+              on_complete(req)
             end
           else
             on_complete(req)
