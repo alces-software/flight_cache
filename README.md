@@ -54,7 +54,36 @@ further details on tagging.
 => [<#FlightCache::Models::Tag:..>]
 ```
 
-### Listing Blobs by Tag and Scope
+### Listing Blobs
+*NOTE:* Listing the blobs is currently under active development. This section
+documents the intended behaviour. The volatile sections have been flagged.
+The underling `list` builder method is equally volatile.
+
+#### Listing all the blobs [Volatile]
+*NOTE*: The server will either return 404 or return all the blobs
+
+The `blobs` method when called without any arguments will return all the
+blob's the user has access to. These blobs will be of different types and
+will include the `public` and `group` scopes.
+
+```
+> cache.blobs
+=> [<#FlightCache::Models::Blob:..>, ..] # List all the blobs
+```
+
+#### Filtering by scope [Volatile]
+*NOTE*: This is not currently supported at the time of writing. It may 404 or
+return all the blobs as above.
+
+The optional `scope:` key will filter the blobs by their ownership scope. The
+returned blobs could still be of any `tag`.
+
+```
+> cache.blobs(scope: <scope_value>)
+=> [<#FlightCache::Models::Blob:..>, ..] # Limits the blobs to the single scope
+```
+
+#### By tag and scope [Stable]
 
 The `blobs` method will return a list of `Blob`s of a particular tag. The
 `tag_name` must be a `String`. Optionally, the list can be further filtered
@@ -64,10 +93,10 @@ If the `scope` is not supplied, it will retrieve `Blobs` from all the users
 scopes.
 
 ```
-> cache.blobs(<tag_name>)
+> cache.blobs(tag: <tag_name>)
 => [<#FlightCache::Models::Blob:..>, ..] # List all blobs of a particular tag
 
-> cache.blobs(<tag_name>, scope: <scope_value>)
+> cache.blobs(tag: <tag_name>, scope: <scope_value>)
 => [<#FlightCache::Models::Blob:..>, ..] # Filter the blobs further by scope
 ```
 
@@ -202,6 +231,13 @@ A single blob can be retrieved using the `get` method using its `:id`:
 
 #### Listing Blobs
 
+All the blobs can be returned using the `list` method.
+
+```
+> blobs = client.blobs.list
+=> [<#FlightCache::Models::Blob:..>, ...]
+```
+
 Blobs can also be filtered by tag by using the `list(tag:)` method. It will
 return all the blobs the user has access to; filtered by tag.
 
@@ -210,11 +246,19 @@ return all the blobs the user has access to; filtered by tag.
 => [<#FlightCache::Models::Blob:..>, ...]
 ```
 
-This will list all the blobs in all the users containers of that type. The
-`:scope` key can be used to filter the blobs depending on user permissions.
+The `:scope` key can be used to filter the blobs depending on user permissions.
 
 ```
-> client.blobs.list(tag:, scope:)
+# NOTE: Volatile
+> client.blobs.list(scope:)
+=> [...] # Only return blobs with the specified scope
+```
+
+The `:scope` and `:tag` filters can be combined to get all the blobs of a
+particular tag and scope.
+
+```
+> client.blobs.list(scope:, tag:)
 => [...] # Only return blobs with the specified tag and scope
 ```
 

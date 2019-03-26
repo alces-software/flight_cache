@@ -39,7 +39,7 @@ class FlightCache
     client.tags.list
   end
 
-  def blobs(tag, scope: nil)
+  def blobs(tag: nil, scope: nil)
     client.blobs.list(tag: tag, scope: scope)
   end
 
