@@ -39,6 +39,12 @@ class FlightCache
             raise UnauthorizedError, res.body&.error
           when 403
             raise ForbiddenError
+          when 404
+            if req.body.respond_to?(:error)
+              raise NotFoundError, req.body.error
+            else
+              on_complete(req)
+            end
           else
             on_complete(req)
           end
