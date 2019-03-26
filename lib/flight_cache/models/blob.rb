@@ -66,7 +66,7 @@ class FlightCache
             if tag
               c.get(paths.tagged(tag, 'blobs'), scope: scope).body.data
             else
-              c.get(join).body.data
+              c.get(join, scope: scope).body.data
             end
           end
         end
