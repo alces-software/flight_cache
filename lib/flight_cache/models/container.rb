@@ -47,9 +47,13 @@ class FlightCache
           end
         end
 
-        def list(tag:)
+        def list(tag: nil)
           build_enum do |con|
-            con.get(paths.tagged(tag)).body.data
+            if tag
+              con.get(paths.tagged(tag)).body.data
+            else
+              con.get(join).body.data
+            end
           end
         end
       end
@@ -57,6 +61,7 @@ class FlightCache
       data_id
       data_attribute :tag_name
       data_attribute :scope
+      data_attribute :restricted
 
       def upload(*a)
         builder.client.blobs.uploader(*a).to_container(id: self.id)

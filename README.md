@@ -21,14 +21,15 @@ require 'flight_cache'
 cache = FlightCache.new(HOST_ADDRESS, FLIGHT_SSO_TOKEN)
 ```
 
-### Getting and Downloading a Blob
+### Getting, Downloading, and Deleting a Blob
 
 A file (aka a `Blob`) can be retrieved using the `blob` method. This will
 return the metadata `Blob` object. To download the `Blob` please use the
 `download` methods. The `download` return an `IO` with the files data\*.
+The `delete` action will destroy the blob and then return the metadata,
+similarly to `get`.
 
-The `FlightCache#get` and `FlightCache#download` methods both tag the `Blob`
-id.
+All the methods take the blob `id` as there input.
 
 ```
 > cache.blob(<id>)
@@ -39,6 +40,9 @@ id.
 
 > cache.blob(<id>).download
 => <#IO:..>
+
+> cache.delete(<id>)
+=> <#FlightCache::Models::Blob:..> # And deletes the blob
 ```
 
 \*NOTE: The downloaded `IO` will either be a `StringIO` or `Tempfile`
@@ -55,13 +59,7 @@ further details on tagging.
 ```
 
 ### Listing Blobs
-*NOTE:* Listing the blobs is currently under active development. This section
-documents the intended behaviour. The volatile sections have been flagged.
-The underling `list` builder method is equally volatile.
-
-#### Listing all the blobs [Volatile]
-*NOTE*: The server will either return 404 or return all the blobs
-
+#### Listing all the blobs
 The `blobs` method when called without any arguments will return all the
 blob's the user has access to. These blobs will be of different types and
 will include the `public` and `group` scopes.
@@ -71,10 +69,7 @@ will include the `public` and `group` scopes.
 => [<#FlightCache::Models::Blob:..>, ..] # List all the blobs
 ```
 
-#### Filtering by scope [Volatile]
-*NOTE*: This is not currently supported at the time of writing. It may 404 or
-return all the blobs as above.
-
+#### Filtering by scope
 The optional `scope:` key will filter the blobs by their ownership scope. The
 returned blobs could still be of any `tag`.
 
@@ -83,7 +78,7 @@ returned blobs could still be of any `tag`.
 => [<#FlightCache::Models::Blob:..>, ..] # Limits the blobs to the single scope
 ```
 
-#### By tag and scope [Stable]
+#### By tag and scope
 
 The `blobs` method will return a list of `Blob`s of a particular tag. The
 `tag_name` must be a `String`. Optionally, the list can be further filtered
@@ -284,7 +279,7 @@ the instance method:
 => ... # As above
 ```
 
-#### Uploading
+#### Uploading a blob
 
 Uploading a blob is a two step process. Firstly, an `Uploader` struct needs to
 be created as an abstraction to the files details. It must be given the
@@ -303,6 +298,15 @@ is optional when used with a `:tag`.
 > uploader.to_container(id:)    # container given by :id
 > uploader.to_tag(tag:)         # the users tagged container
 > uploader.to_tag(tag: scope:)  # the tagged container given by scope
+```
+
+#### Deleting a blob
+
+The `delete` action is similar to a `get` request, but also destroys the blob.
+
+```
+> blob = client.blobs.get(id: 1)
+=> <#FlightCache::Models::Blob:...> # And deletes the blob
 ```
 
 ### Tag Builder
@@ -358,10 +362,15 @@ Gets the container by tag that belongs to:
 
 #### Listing Containers
 
-Listing containers can only (currently) be done by `:tag`
+All the containers the user has access to is returned from `list`. This can
+be further filtered using the `:tag` option.
 
 ```
+> client.containers.list
+=> [<#FlightCache::Models::Container:..>, ...]
+
 > client.containers.list(tag:)
+=> [...] # Filters the Containers by tag
 ```
 
 #### Uploading to a Container

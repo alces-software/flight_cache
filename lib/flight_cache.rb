@@ -47,6 +47,10 @@ class FlightCache
     client.blobs.get(id: id)
   end
 
+  def delete(id)
+    client.blobs.delete(id: id)
+  end
+
   def upload(name, io, tag:, scope: nil)
     client.blobs.uploader(filename: name, io: io).to_tag(tag: tag, scope: scope)
   end

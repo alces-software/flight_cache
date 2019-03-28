@@ -71,6 +71,12 @@ class FlightCache
           end
         end
 
+        def delete(id:)
+          build do |con|
+            con.delete(join(id)).body.data
+          end
+        end
+
         def download(id:, &b)
           url = client.connection.get(join(id, 'download')).headers["location"]
           open(url, &b)
@@ -87,6 +93,7 @@ class FlightCache
       data_attribute :size, from: :byte_size
       data_attribute :tag_name
       data_attribute :scope
+      data_attribute :protected
 
       def download
         builder.download(id: self.id)
