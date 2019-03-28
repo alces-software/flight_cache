@@ -71,6 +71,12 @@ class FlightCache
           end
         end
 
+        def delete(id:)
+          build do |con|
+            con.delete(join(id)).body.data
+          end
+        end
+
         def download(id:, &b)
           url = client.connection.get(join(id, 'download')).headers["location"]
           open(url, &b)
