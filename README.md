@@ -362,10 +362,15 @@ Gets the container by tag that belongs to:
 
 #### Listing Containers
 
-Listing containers can only (currently) be done by `:tag`
+All the containers the user has access to is returned from `list`. This can
+be further filtered using the `:tag` option.
 
 ```
+> client.containers.list
+=> [<#FlightCache::Models::Container:..>, ...]
+
 > client.containers.list(tag:)
+=> [...] # Filters the Containers by tag
 ```
 
 #### Uploading to a Container
