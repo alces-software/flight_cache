@@ -93,6 +93,7 @@ class FlightCache
       data_attribute :size, from: :byte_size
       data_attribute :tag_name
       data_attribute :scope
+      data_attribute :protected
 
       def download
         builder.download(id: self.id)
