@@ -48,6 +48,8 @@ class FlightCache
       end
 
       data_attribute :name
+      data_attribute :max_size
+      data_attribute :restricted
     end
   end
 end
