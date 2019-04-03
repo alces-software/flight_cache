@@ -62,7 +62,7 @@ further details on tagging.
 #### Listing all the blobs
 The `blobs` method when called without any arguments will return all the
 blob's the user has access to. These blobs will be of different types and
-will include the `public` and `group` scopes.
+will include the `global` and `group` scopes.
 
 ```
 > cache.blobs
@@ -127,14 +127,14 @@ Each `Container` can have exactly one owner which will determine how it is
 scoped:
 1. A user,            `scope = :user`,
 2. A group,           `scope = :group`,
-3. The public group,  `scope = :public`\*
+3. The global group,  `scope = :global`\*
 4. No scope given,    See defaults below
 5. Any other value,   Consider the same as no scope given
 
-\* In theory a user could belong to the public group, making their `:group` and
-`:public` scopes equivalent. In practice however, this should never happen.
+\* In theory a user could belong to the global group, making their `:group` and
+`:global` scopes equivalent. In practice however, this should never happen.
 
-Because each owner (`user`/`group`/`public group`) maintains its own set of
+Because each owner (`user`/`group`/`global group`) maintains its own set of
 `Container`s/models, the scope is a easy way to toggle between them.
 
 #### Scoping Behaviour - Get (single model)
@@ -146,8 +146,8 @@ Get requests (that fetch a single model) will default to using the `:user`
 scope. The `:user` scope will return the model that belongs to the user.
 
 By setting the scope to `:group`, it will trigger the model that belongs to
-the user's group to be returned. The `:public` scope is similar but returns
-the model that belongs to the public group.
+the user's group to be returned. The `:global` scope is similar but returns
+the model that belongs to the global group.
 
 #### Scoping Behaviour - List (multiple models)
 
@@ -155,7 +155,7 @@ The toggling behaviour of the `scope` is the same when listing multiple models,
 with exception of the default.
 
 This means the `:user` scope will still only return models that the user directly
-owns. Similarly, the `:group` and `:public` scopes only return models that are
+owns. Similarly, the `:group` and `:global` scopes only return models that are
 owned by the corresponding group.
 
 However there is no default scope when listing. This allows listing of all
