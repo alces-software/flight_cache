@@ -97,6 +97,9 @@ class FlightCache
       data_attribute :tag_name
       data_attribute :scope
       data_attribute :protected
+      data_attribute :admin
+      data_attribute :title
+      data_attribute :label
 
       def download
         builder.download(id: self.id)

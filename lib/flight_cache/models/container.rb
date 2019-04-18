@@ -65,6 +65,7 @@ class FlightCache
       data_attribute :tag_name
       data_attribute :scope
       data_attribute :restricted
+      data_attribute :admin
 
       def upload(*a)
         builder.client.blobs.uploader(*a).to_container(id: self.id)
