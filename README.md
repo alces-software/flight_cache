@@ -209,7 +209,8 @@ The blobs builder is returned by:
 
 #### Getting Blob
 
-A single blob can be retrieved using the `get` method using its `:id`:
+A single blob can be retrieved using the `get` method using the `:id` parameter.
+The `id` will always take precedence over following get methods.
 
 ```
 > blob = client.blobs.get(id: 1)
@@ -222,6 +223,31 @@ A single blob can be retrieved using the `get` method using its `:id`:
 }
 > blob.class
 => FlightCache::Models::Blob
+```
+
+It is also possible to to retrieve blobs using their `:filename` and `:tag`.
+This will implicitly determine the appropriate file using the scoping
+mechanism. By default it will retrieve the blob in the non admin
+"user" `:scope`. These defaults can be changed using the `:scope` and
+`:admin` flags.
+
+```
+> client.blobs.get(tag: <tag>, filename: <filename>)
+=> # Returns the blob in the non admin user container
+
+> client.blobs.get(tag: <tag>, filename: <filename>, scope: <scope>)
+=> # Retreive the blob in the specified scope
+
+# For admin use ONLY
+> client.blobs.get(tag: <tag>, filename: <filename>, admin: true)
+=> Will retreive the blob from the admin only user container
+
+> client.blobs.get(tag:, filename:, admin:, scope:)
+=> Specifiy a different admin only scope to search
+
+# NOTE: Giving an id with other arguments
+> client.blobs.get(id:, tag:, filename:, admin:, scope:)
+=> Ignores the other flags and returns the blob by id
 ```
 
 #### Listing Blobs

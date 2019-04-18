@@ -27,10 +27,16 @@
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
+require 'uri'
+
 class FlightCache
   class PathHelper
     def tagged(tag_name, *parts)
       ["tagged", tag_name, *parts].join('/')
+    end
+
+    def bucket(scope, tag, *parts)
+      ['buckets', scope, tag, *parts].join('/')
     end
   end
 end

@@ -70,8 +70,15 @@ class FlightCache
   class ModelTypeError < Error; end
 
   # BadRequestError
-  # Use: The client could not make the request for some reason
-  class BadRequestError < Error; end
+  # Use: The client could not make the request because of insufficient
+  # arguments or another reason
+  class BadRequestError < Error
+    MESSAGE = 'Insufficient arguments. See documentation for further detail'
+
+    def initialize(msg = MESSAGE)
+      super
+    end
+  end
 
   # MissingBuilderError
   # Use: A model can not make an additional request as it is mising its builder

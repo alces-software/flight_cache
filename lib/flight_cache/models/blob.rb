@@ -58,9 +58,16 @@ class FlightCache
         api_type 'blob'
         api_name 'blobs'
 
-        def get(id:)
+        def get(id: nil, tag: nil, filename: nil, scope: :user, admin: false)
           build do |con|
-            con.get(join(id)).body.data
+            path = if id
+              join(id)
+            elsif tag && filename
+              paths.bucket(scope, tag, 'blobs', URI.encode(filename))
+            else
+              raise BadRequestError
+            end
+            con.get(path, admin: admin).body.data
           end
         end
 
