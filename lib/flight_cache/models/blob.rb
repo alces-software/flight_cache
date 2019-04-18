@@ -71,13 +71,11 @@ class FlightCache
           end
         end
 
-        def list(tag: nil, scope: nil)
-          build_enum do |c|
-            if tag
-              c.get(paths.tagged(tag, 'blobs'), scope: scope).body.data
-            else
-              c.get(join, scope: scope).body.data
-            end
+        def list(tag: nil, scope: nil, admin: nil)
+          build_enum do |con|
+            con.get(join, scope: scope, admin: admin, tag: tag)
+               .body
+               .data
           end
         end
 
@@ -105,7 +103,7 @@ class FlightCache
       data_attribute :scope
       data_attribute :protected
       data_attribute :admin
-      data_attribute :title
+      data_attribute :title, required: false, default: ''
       data_attribute :label
 
       def download

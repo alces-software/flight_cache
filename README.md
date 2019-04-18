@@ -283,6 +283,13 @@ particular tag and scope.
 => [...] # Only return blobs with the specified tag and scope
 ```
 
+Admins can also index the admin only blobs using the `:admin` flag. This can be
+used with all the above filters.
+
+```
+> client.blobs.list(scope:, tag:, admin: true)
+```
+
 #### Downloading a blob
 
 The blob can be downloaded by its id using the `download` method. This is
