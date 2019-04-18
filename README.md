@@ -365,7 +365,10 @@ The container builder can be returned by:
 
 #### Getting a Container
 
-Getting a single container by `:id` is equivalent in syntax to getting a blob:
+Getting a single container by `:id` is equivalent in syntax to getting a blob.
+Containers can also be retrieved by `:tag` in a similarly blobs (without
+the `filename`). Once again the `:scope` defaults to "user" and `:admin` to false.
+These flags can be overridden in the same manner as a Blob.
 
 ```
 > ctr = client.containers.get(id: 1)
@@ -376,6 +379,12 @@ Getting a single container by `:id` is equivalent in syntax to getting a blob:
 }
 > ctr.class
 => FlightCache::Models::Container
+
+> client.containers.get(tag: <tag>)
+=> Returns the non admin tagged container in the user scope
+
+> client.containers.get(tag:, scope:, admin:)
+=> Returns the corresponding container in the same manner as blobs
 ```
 
 A container can also be fetched by using a `:tag` and optional `:scope`:
