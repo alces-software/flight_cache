@@ -292,15 +292,14 @@ used with all the above filters.
 
 #### Downloading a blob
 
-The blob can be downloaded by its id using the `download` method. This is
-essentially the same as a `get` without first retrieving the metadata model
-object.
+A blob can be download using the `download` method. It takes the same arguments
+as `get` but will redirect the request to the service url.
 
 If the metadata model has already been fetched, then it can be downloaded using
 the instance method:
 
 ```
-> client.blobs.download(id:)
+> client.blobs.download(id:) # Or other arguments as described under get
 => <#IO:...>
 
 > client.blobs.download(id:) { |io| ... }
@@ -338,7 +337,7 @@ is optional when used with a `:tag`.
 The `delete` action is similar to a `get` request, but also destroys the blob.
 
 ```
-> blob = client.blobs.get(id: 1)
+> blob = client.blobs.get(id: 1) # Or other arguments as described under get
 => <#FlightCache::Models::Blob:...> # And deletes the blob
 ```
 

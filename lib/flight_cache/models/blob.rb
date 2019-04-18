@@ -60,13 +60,7 @@ class FlightCache
 
         def get(id: nil, tag: nil, filename: nil, scope: :user, admin: false)
           build do |con|
-            path = if id
-              join(id)
-            elsif tag && filename
-              paths.bucket(scope, tag, 'blobs', URI.encode(filename))
-            else
-              raise BadRequestError
-            end
+            path = get_path(id, scope, tag, filename)
             con.get(path, admin: admin).body.data
           end
         end
@@ -79,19 +73,35 @@ class FlightCache
           end
         end
 
-        def delete(id:)
+        def delete(id: nil, tag: nil, filename: nil, scope: :user, admin: false)
           build do |con|
-            con.delete(join(id)).body.data
+            path = get_path(id, scope, tag, filename)
+            con.delete(path, admin: admin).body.data
           end
         end
 
-        def download(id:, &b)
-          url = client.connection.get(join(id, 'download')).headers["location"]
+        def download(id: nil, tag: nil, filename: nil, scope: :user, admin: false, &b)
+          path = get_path(id, scope, tag, filename)
+          url = client.connection
+                      .get("#{path}/download", admin: admin)
+                      .headers["location"]
           open(url, &b)
         end
 
         def uploader(filename:, io:)
           Uploader.new(self, filename, io)
+        end
+
+        private
+
+        def get_path(id, scope, tag, filename)
+          if id
+            join(id)
+          elsif tag && filename && scope
+            paths.bucket(scope, tag, 'blobs', URI.encode(filename))
+          else
+            raise BadRequestError
+          end
         end
       end
 
