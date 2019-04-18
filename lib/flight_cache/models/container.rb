@@ -49,13 +49,9 @@ class FlightCache
           end
         end
 
-        def list(tag: nil)
+        def list(tag: nil, scope: nil, admin: nil)
           build_enum do |con|
-            if tag
-              con.get(paths.tagged(tag)).body.data
-            else
-              con.get(join).body.data
-            end
+            con.get(join, scope: scope, admin: admin, tag: tag).body.data
           end
         end
       end

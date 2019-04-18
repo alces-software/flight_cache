@@ -398,7 +398,8 @@ Gets the container by tag that belongs to:
 #### Listing Containers
 
 All the containers the user has access to is returned from `list`. This can
-be further filtered using the `:tag` option.
+be further filtered using the `:tag` option. The `:admin` option gives weather
+the admin or non admin containers should be returned.
 
 ```
 > client.containers.list
@@ -406,6 +407,9 @@ be further filtered using the `:tag` option.
 
 > client.containers.list(tag:)
 => [...] # Filters the Containers by tag
+
+> client.containers.list(admin: true)
+=> Returns the admin containers
 ```
 
 #### Uploading to a Container
