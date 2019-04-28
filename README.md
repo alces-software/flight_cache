@@ -323,13 +323,48 @@ A `:filename` and `:io` are always required. The `:filename` must be unique with
 the `container`. The `io` will usually be an open file descriptor for reading but
 maybe any `IO` type object.
 
+The `:title` is an optional human readable name that can be sent with any form of
+the request. It does not have to be unique.
+
 ```
 # Direct upload
 > client.blobs.upload(filename:, io:, container_id:)
+> client.blobs.upload(filename:, title:, io:, container_id:)
 
 # Tagged upload
 > client.blobs.upload(filename:, io:, tag:)
-> client.blobs.upload(filename:, io:, tag:, scope:, admin:)
+> client.blobs.upload(filename:, title:, io:, tag:, scope:, admin:)
+```
+
+#### Updating a blob
+
+A blob's `filename`, `title`, and content can be updated using the `update`
+method. The blob to be updated can be selected in the following three ways
+(in priority order):
+1. Directly using its `:id`
+2. Indirectly via its `:container_id` and `:filename`
+3. Indirectly using the tag/scope system and its `:filename`
+
+Because the `:filename` can be used to select the corresponding file, the
+updated filename is given by the `:new_filename` key. The scoping system
+uses the standard `:scope`, `:tag`, `admin` keys and defaults.
+
+
+```
+# Optional arguments are denoted with a nil
+
+# Direct update to the blob id
+> client.blobs.update(id:, new_filename: nil, title: nil, io: nil)
+
+# Indirect update to a container
+> client.blobs.update(
+    container_id:, filename:, new_filename: nil, title: nil, io: nil
+  )
+
+# Indirect update using a scope
+> client.blobs.update(
+    tag:, filename:, scope: nil, admin: nil, new_filename: nil, title: nil, io: nil
+  )
 ```
 
 #### Deprecated! Uploading a blob

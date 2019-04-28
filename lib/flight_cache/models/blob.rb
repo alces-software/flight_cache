@@ -111,7 +111,37 @@ class FlightCache
           }.tap { |h| h[:title] = title if title }
 
           build do |con|
-            con.post(path, payload)
+            con.post(path, payload).body.data
+          end
+        end
+
+        def update(id: nil,
+                   container_id: nil,
+                   tag: nil,
+                   scope: :user,
+                   admin: false,
+                   filename: nil,
+                   new_filename: nil,
+                   title: nil,
+                   io: nil)
+          path = if id
+                   join(id)
+                 elsif container_id && filename
+                   client.containers.join(container_id, 'blobs', filename)
+                 elsif tag && scope && filename
+                   paths.bucket(scope, tag, 'blobs', filename)
+                 else
+                   raise BadRequestError
+                 end
+
+          payload = { admin: admin }.tap do |hash|
+            hash[:filename] = new_filename if new_filename
+            hash[:title] = title if title
+            hash[:payload] = Faraday::UploadIO.new(io, 'application/octet-stream') if io
+          end
+
+          build do |con|
+            con.put(path, payload).body.data
           end
         end
 
