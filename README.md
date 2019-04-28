@@ -350,23 +350,24 @@ the `container`. The `io` will usually be an open file descriptor for reading bu
 maybe any `IO` type object.
 
 The `:title` is an optional human readable name that can be sent with any form of
-the request. It does not have to be unique.
+the request. It does not have to be unique. The `:label` is also optional but must
+be an alphanumeric string that is delimited by forward slashes `/`.
 
 ```
 # Direct upload
 > client.blobs.upload(filename:, io:, container_id:)
-> client.blobs.upload(filename:, title:, io:, container_id:)
+> client.blobs.upload(filename:, title:, label:, io:, container_id:)
 
 # Tagged upload
 > client.blobs.upload(filename:, io:, tag:)
-> client.blobs.upload(filename:, title:, io:, tag:, scope:, admin:)
+> client.blobs.upload(filename:, title:, label:, io:, tag:, scope:, admin:)
 ```
 
 #### Updating a blob
 
-A blob's `filename`, `title`, and content can be updated using the `update`
-method. The blob to be updated can be selected in the following three ways
-(in priority order):
+A blob's `filename`, `title`, `:label`, and content can be updated using the
+`update` method. The blob to be updated can be selected in the following three
+ways (in priority order):
 1. Directly using its `:id`
 2. Indirectly via its `:container_id` and `:filename`
 3. Indirectly using the tag/scope system and its `:filename`

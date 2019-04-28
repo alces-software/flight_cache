@@ -92,6 +92,7 @@ class FlightCache
         def upload(filename:,
                    io:,
                    title: nil,
+                   label: nil,
                    container_id: nil,
                    tag: nil,
                    scope: :user,
@@ -108,7 +109,10 @@ class FlightCache
             filename: filename,
             admin: admin,
             payload: Faraday::UploadIO.new(io, 'application/octet-stream')
-          }.tap { |h| h[:title] = title if title }
+          }.tap do |hash|
+            hash[:title] = title if title
+            hash[:label] = label if label
+          end
 
           build do |con|
             con.post(path, payload).body.data
@@ -123,6 +127,7 @@ class FlightCache
                    filename: nil,
                    new_filename: nil,
                    title: nil,
+                   label: nil,
                    io: nil)
           path = if id
                    join(id)
@@ -138,6 +143,7 @@ class FlightCache
             hash[:filename] = new_filename if new_filename
             hash[:title] = title if title
             hash[:payload] = Faraday::UploadIO.new(io, 'application/octet-stream') if io
+            hash[:label] = label if label
           end
 
           build do |con|
