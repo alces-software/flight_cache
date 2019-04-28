@@ -65,7 +65,8 @@ class FlightCache
     def connection
       Faraday::Connection.new(host) do |conn|
         conn.token_auth(token)
-        conn.request :json
+        conn.request :multipart
+        conn.request :url_encoded
 
         conn.use RaiseError
 
