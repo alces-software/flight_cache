@@ -290,6 +290,32 @@ used with all the above filters.
 > client.blobs.list(scope:, tag:, admin: true)
 ```
 
+##### Filtering the blobs list by label
+
+Each blob can have an optional `:label`. This label will be an alphanumeric
+delimited by forward slash `/`. Their are two different ways to match the
+label: exactly and `:wild`. These filters can be used with all the listing
+options above.
+
+An "exact" match only returns blobs where the `:label` is a literal match.
+An exact match will be done by default or when the `:wild` flag is `false`.
+
+A "wild" match will return the blobs from the exact match AND any labels that
+match up to a `/`.
+
+```
+# Exact match
+> client.blobs.list(label:)
+
+# Wild match
+> client.blobs.list(label:, wild: true)
+
+Example:
+> client.blobs.list(label: 'a/b', wild: true)
+=> # Returns all blobs with label a/b OR a/b/* where * can be anything
+   # However it will not return label a OR a/bc etc.
+```
+
 #### Downloading a blob
 
 A blob can be download using the `download` method. It takes the same arguments

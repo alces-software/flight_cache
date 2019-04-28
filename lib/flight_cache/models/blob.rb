@@ -66,9 +66,9 @@ class FlightCache
           end
         end
 
-        def list(tag: nil, scope: nil, admin: nil)
+        def list(tag: nil, scope: nil, admin: nil, label: nil, wild: false)
           build_enum do |con|
-            con.get(join, scope: scope, admin: admin, tag: tag)
+            con.get(join, scope: scope, admin: admin, tag: tag, label: label, wild: wild)
                .body
                .data
           end
