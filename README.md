@@ -313,6 +313,27 @@ the instance method:
 
 #### Uploading a blob
 
+A blob can be uploaded to either directly to a container or implicitly to a
+tag. The `:container_id` takes priority and will override the following options.
+The container can also be implicitly inferred from the `:tag`, `:scope`, and
+`:admin` flags. It works in a similar way to getting a `container` where `:scope`
+and `:admin` default to `user` and `false` respectively.
+
+A `:filename` and `:io` are always required. The `:filename` must be unique within
+the `container`. The `io` will usually be an open file descriptor for reading but
+maybe any `IO` type object.
+
+```
+# Direct upload
+> client.blobs.upload(filename:, io:, container_id:)
+
+# Tagged upload
+> client.blobs.upload(filename:, io:, tag:)
+> client.blobs.upload(filename:, io:, tag:, scope:, admin:)
+```
+
+#### Deprecated! Uploading a blob
+
 Uploading a blob is a two step process. Firstly, an `Uploader` struct needs to
 be created as an abstraction to the files details. It must be given the
 `:filename` and an `:io` containing the file data.

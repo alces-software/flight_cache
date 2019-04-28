@@ -32,6 +32,7 @@ require 'open-uri'
 class FlightCache
   module Models
     class Blob < Model
+      # TODO: Deprecated
       Uploader = Struct.new(:builder, :filename, :io) do
         def to_container(id:)
           path = container_upload_path(id)
@@ -88,6 +89,33 @@ class FlightCache
           open(url, &b)
         end
 
+        def upload(filename:,
+                   io:,
+                   title: nil,
+                   container_id: nil,
+                   tag: nil,
+                   scope: :user,
+                   admin: :false)
+          path = if id
+                   client.containers.join(id, 'blobs')
+                 elsif tag && scope
+                   paths.bucket(scope, tag, 'blobs')
+                 else
+                   raise BadRequestError
+                 end
+
+          payload = {
+            filename: filename,
+            admin: admin,
+            payload: Faraday::UploadIO.new(io, 'application/octet-stream')
+          }.tap { |h| h[:title] = title if title }
+
+          build do |con|
+            con.post(path, payload)
+          end
+        end
+
+        # TODO: Deprecated!
         def uploader(filename:, io:)
           Uploader.new(self, filename, io)
         end
