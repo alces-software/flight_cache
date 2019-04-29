@@ -79,7 +79,7 @@ class FlightCache
                  elsif tag && scope
                    paths.bucket(scope, tag, 'blobs')
                  else
-                   raise BadRequestError
+                   raise InsufficientArgumentsError
                  end
 
           payload = {
@@ -113,7 +113,7 @@ class FlightCache
                  elsif tag && scope && filename
                    paths.bucket(scope, tag, 'blobs', filename)
                  else
-                   raise BadRequestError
+                   raise InsufficientArgumentsError
                  end
 
           payload = { admin: admin }.tap do |hash|
@@ -136,7 +136,7 @@ class FlightCache
           elsif tag && filename && scope
             paths.bucket(scope, tag, 'blobs', URI.encode(filename))
           else
-            raise BadRequestError
+            raise InsufficientArgumentsError
           end
         end
       end

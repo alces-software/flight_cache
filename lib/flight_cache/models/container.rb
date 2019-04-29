@@ -43,7 +43,7 @@ class FlightCache
             elsif tag
               paths.bucket(scope, tag)
             else
-              raise BadRequestError
+              raise InsufficientArgumentsError
             end
             con.get(path, admin: admin).body.data
           end
