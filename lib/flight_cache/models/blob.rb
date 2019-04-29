@@ -74,8 +74,8 @@ class FlightCache
                    tag: nil,
                    scope: :user,
                    admin: :false)
-          path = if id
-                   client.containers.join(id, 'blobs')
+          path = if container_id
+                   client.containers.join(container_id, 'blobs')
                  elsif tag && scope
                    paths.bucket(scope, tag, 'blobs')
                  else
