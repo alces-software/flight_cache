@@ -44,6 +44,11 @@ class FlightCache
     end
   end
 
+  # BadRequestError
+  # Use: Their has been server side client error
+  # Code: 400
+  class BadRequestError < Error; end
+
   # UnauthorizedError
   # Use: Accessed denied due to failing authentication
   # Code: 401
@@ -69,10 +74,10 @@ class FlightCache
   # Use: The server response does not match the model type
   class ModelTypeError < Error; end
 
-  # BadRequestError
+  # InsufficientArgumentsError
   # Use: The client could not make the request because of insufficient
   # arguments or another reason
-  class BadRequestError < Error
+  class InsufficientArgumentsError < Error
     MESSAGE = 'Insufficient arguments. See documentation for further details'
 
     def initialize(msg = MESSAGE)

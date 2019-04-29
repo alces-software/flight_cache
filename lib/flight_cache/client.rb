@@ -41,9 +41,10 @@ class FlightCache
             raise UnauthorizedError, res.body&.error
           when 403
             raise ForbiddenError
-          when 404
+          when 404, 400
             if req.body.respond_to?(:error)
-              raise NotFoundError, req.body.error
+              klass = (req.status == 400 ? BadRequestError : NotFoundError)
+              raise klass, req.body.error
             else
               on_complete(req)
             end
