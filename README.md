@@ -363,6 +363,22 @@ be an alphanumeric string that is delimited by forward slashes `/`.
 > client.blobs.upload(filename:, title:, label:, io:, tag:, scope:, admin:)
 ```
 
+##### Uploading to a container model
+
+It is also possible to upload to an existing `Container` model. This requires
+getting the container first. This method requires the `:filename` and `:io`
+but not the container/scope parameters. It still can take the optional
+`:title` and `label` fields.
+
+```
+# Get the Container (see below)
+> container = client.containers.get(...)
+
+# Upload to the Container
+> container.upload(filename:, io:)
+> container.upload(filename:, io:, label:, title:)
+```
+
 #### Updating a blob
 
 A blob's `filename`, `title`, `:label`, and content can be updated using the
@@ -392,27 +408,6 @@ uses the standard `:scope`, `:tag`, `admin` keys and defaults.
 > client.blobs.update(
     tag:, filename:, scope: nil, admin: nil, new_filename: nil, title: nil, io: nil
   )
-```
-
-#### Deprecated! Uploading a blob
-
-Uploading a blob is a two step process. Firstly, an `Uploader` struct needs to
-be created as an abstraction to the files details. It must be given the
-`:filename` and an `:io` containing the file data.
-
-```
-> uploader = client.blobs.uploader(filename:, io:)
-=> #<struct FlightCache::Models::Blob::Uploader:..>
-```
-
-Then the file is uploaded to a container either by `:id` or `:tag`. The `:scope`
-is optional when used with a `:tag`.
-
-```
-# The following methods upload to:
-> uploader.to_container(id:)    # container given by :id
-> uploader.to_tag(tag:)         # the users tagged container
-> uploader.to_tag(tag: scope:)  # the tagged container given by scope
 ```
 
 #### Deleting a blob

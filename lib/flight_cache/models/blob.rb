@@ -32,29 +32,6 @@ require 'open-uri'
 class FlightCache
   module Models
     class Blob < Model
-      # TODO: Deprecated
-      Uploader = Struct.new(:builder, :filename, :io) do
-        def to_container(id:)
-          path = container_upload_path(id)
-          builder.build do |con|
-            con.post(path, io.read) do |req|
-              req.headers['Content-Type'] = 'application/octet-stream'
-            end.body.data
-          end
-        end
-
-        def to_tag(tag:, scope: nil)
-          ctr = builder.client.containers.get(tag: tag, scope: scope)
-          to_container(id: ctr.id)
-        end
-
-        private
-
-        def container_upload_path(container_id)
-          builder.client.containers.join(container_id, 'upload', filename)
-        end
-      end
-
       builder_class do
         api_type 'blob'
         api_name 'blobs'
@@ -149,11 +126,6 @@ class FlightCache
           build do |con|
             con.put(path, payload).body.data
           end
-        end
-
-        # TODO: Deprecated!
-        def uploader(filename:, io:)
-          Uploader.new(self, filename, io)
         end
 
         private
