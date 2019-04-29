@@ -496,24 +496,6 @@ the admin or non admin containers should be returned.
 => Returns the admin containers
 ```
 
-#### Uploading to a Container
-
-Uploading is primarily handled by the `BlobBuilder` and thus the
-`ContainerBuilder` does not have an `upload` method.
-
-However it is possible to upload to a fetched container using the `upload`
-instance method. The following method calls are equivalent in end result
-but will differ in API requests:
-
-```
-# Upload directly using the BlobsBuilder
-> client.blobs.uploader(<uploader_args>).to_container(<get_args>)
-
-# First fetch the Container model and then upload to it
-# NOTE: This will make two requests
-> client.containers.get(<get_args>).upload(<uploader_args>)
-```
-
 # License
 Eclipse Public License 2.0, see LICENSE.txt for details.
 
