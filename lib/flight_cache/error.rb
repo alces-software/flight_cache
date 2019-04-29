@@ -23,7 +23,7 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
@@ -70,8 +70,15 @@ class FlightCache
   class ModelTypeError < Error; end
 
   # BadRequestError
-  # Use: The client could not make the request for some reason
-  class BadRequestError < Error; end
+  # Use: The client could not make the request because of insufficient
+  # arguments or another reason
+  class BadRequestError < Error
+    MESSAGE = 'Insufficient arguments. See documentation for further details'
+
+    def initialize(msg = MESSAGE)
+      super
+    end
+  end
 
   # MissingBuilderError
   # Use: A model can not make an additional request as it is mising its builder

@@ -23,7 +23,7 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
@@ -96,10 +96,11 @@ class FlightCache
       builder_class.new(client)
     end
 
-    def self.data_attribute(key, from: nil)
+    def self.data_attribute(key, from: nil, required: true, default: nil)
       from ||= key
-      property key, required: true, from: :__data__, with: ->(data) do
-        data&.[](:attributes)&.[](from)
+      property key, required: required, from: :__data__, with: ->(data) do
+        value = data&.[](:attributes)&.[](from)
+        value.nil? ? default : value
       end
     end
 

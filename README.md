@@ -209,7 +209,8 @@ The blobs builder is returned by:
 
 #### Getting Blob
 
-A single blob can be retrieved using the `get` method using its `:id`:
+A single blob can be retrieved using the `get` method using the `:id` parameter.
+The `id` will always take precedence over following get methods.
 
 ```
 > blob = client.blobs.get(id: 1)
@@ -222,6 +223,31 @@ A single blob can be retrieved using the `get` method using its `:id`:
 }
 > blob.class
 => FlightCache::Models::Blob
+```
+
+It is also possible to to retrieve blobs using their `:filename` and `:tag`.
+This will implicitly determine the appropriate file using the scoping
+mechanism. By default it will retrieve the blob in the non admin
+"user" `:scope`. These defaults can be changed using the `:scope` and
+`:admin` flags.
+
+```
+> client.blobs.get(tag: <tag>, filename: <filename>)
+=> # Returns the blob in the non admin user container
+
+> client.blobs.get(tag: <tag>, filename: <filename>, scope: <scope>)
+=> # Retreive the blob in the specified scope
+
+# For admin use ONLY
+> client.blobs.get(tag: <tag>, filename: <filename>, admin: true)
+=> Will retreive the blob from the admin only user container
+
+> client.blobs.get(tag:, filename:, admin:, scope:)
+=> Specifiy a different admin only scope to search
+
+# NOTE: Giving an id with other arguments
+> client.blobs.get(id:, tag:, filename:, admin:, scope:)
+=> Ignores the other flags and returns the blob by id
 ```
 
 #### Listing Blobs
@@ -257,17 +283,49 @@ particular tag and scope.
 => [...] # Only return blobs with the specified tag and scope
 ```
 
+Admins can also index the admin only blobs using the `:admin` flag. This can be
+used with all the above filters.
+
+```
+> client.blobs.list(scope:, tag:, admin: true)
+```
+
+##### Filtering the blobs list by label
+
+Each blob can have an optional `:label`. This label will be an alphanumeric
+delimited by forward slash `/`. Their are two different ways to match the
+label: exactly and `:wild`. These filters can be used with all the listing
+options above.
+
+An "exact" match only returns blobs where the `:label` is a literal match.
+An exact match will be done by default or when the `:wild` flag is `false`.
+
+A "wild" match will return the blobs from the exact match AND any labels that
+match up to a `/`.
+
+```
+# Exact match
+> client.blobs.list(label:)
+
+# Wild match
+> client.blobs.list(label:, wild: true)
+
+Example:
+> client.blobs.list(label: 'a/b', wild: true)
+=> # Returns all blobs with label a/b OR a/b/* where * can be anything
+   # However it will not return label a OR a/bc etc.
+```
+
 #### Downloading a blob
 
-The blob can be downloaded by its id using the `download` method. This is
-essentially the same as a `get` without first retrieving the metadata model
-object.
+A blob can be download using the `download` method. It takes the same arguments
+as `get` but will redirect the request to the service url.
 
 If the metadata model has already been fetched, then it can be downloaded using
 the instance method:
 
 ```
-> client.blobs.download(id:)
+> client.blobs.download(id:) # Or other arguments as described under get
 => <#IO:...>
 
 > client.blobs.download(id:) { |io| ... }
@@ -281,23 +339,75 @@ the instance method:
 
 #### Uploading a blob
 
-Uploading a blob is a two step process. Firstly, an `Uploader` struct needs to
-be created as an abstraction to the files details. It must be given the
-`:filename` and an `:io` containing the file data.
+A blob can be uploaded to either directly to a container or implicitly to a
+tag. The `:container_id` takes priority and will override the following options.
+The container can also be implicitly inferred from the `:tag`, `:scope`, and
+`:admin` flags. It works in a similar way to getting a `container` where `:scope`
+and `:admin` default to `user` and `false` respectively.
+
+A `:filename` and `:io` are always required. The `:filename` must be unique within
+the `container`. The `io` will usually be an open file descriptor for reading but
+maybe any `IO` type object.
+
+The `:title` is an optional human readable name that can be sent with any form of
+the request. It does not have to be unique. The `:label` is also optional but must
+be an alphanumeric string that is delimited by forward slashes `/`.
 
 ```
-> uploader = client.blobs.uploader(filename:, io:)
-=> #<struct FlightCache::Models::Blob::Uploader:..>
+# Direct upload
+> client.blobs.upload(filename:, io:, container_id:)
+> client.blobs.upload(filename:, title:, label:, io:, container_id:)
+
+# Tagged upload
+> client.blobs.upload(filename:, io:, tag:)
+> client.blobs.upload(filename:, title:, label:, io:, tag:, scope:, admin:)
 ```
 
-Then the file is uploaded to a container either by `:id` or `:tag`. The `:scope`
-is optional when used with a `:tag`.
+##### Uploading to a container model
+
+It is also possible to upload to an existing `Container` model. This requires
+getting the container first. This method requires the `:filename` and `:io`
+but not the container/scope parameters. It still can take the optional
+`:title` and `label` fields.
 
 ```
-# The following methods upload to:
-> uploader.to_container(id:)    # container given by :id
-> uploader.to_tag(tag:)         # the users tagged container
-> uploader.to_tag(tag: scope:)  # the tagged container given by scope
+# Get the Container (see below)
+> container = client.containers.get(...)
+
+# Upload to the Container
+> container.upload(filename:, io:)
+> container.upload(filename:, io:, label:, title:)
+```
+
+#### Updating a blob
+
+A blob's `filename`, `title`, `:label`, and content can be updated using the
+`update` method. The blob to be updated can be selected in the following three
+ways (in priority order):
+1. Directly using its `:id`
+2. Indirectly via its `:container_id` and `:filename`
+3. Indirectly using the tag/scope system and its `:filename`
+
+Because the `:filename` can be used to select the corresponding file, the
+updated filename is given by the `:new_filename` key. The scoping system
+uses the standard `:scope`, `:tag`, `admin` keys and defaults.
+
+
+```
+# Optional arguments are denoted with a nil
+
+# Direct update to the blob id
+> client.blobs.update(id:, new_filename: nil, title: nil, io: nil)
+
+# Indirect update to a container
+> client.blobs.update(
+    container_id:, filename:, new_filename: nil, title: nil, io: nil
+  )
+
+# Indirect update using a scope
+> client.blobs.update(
+    tag:, filename:, scope: nil, admin: nil, new_filename: nil, title: nil, io: nil
+  )
 ```
 
 #### Deleting a blob
@@ -305,7 +415,7 @@ is optional when used with a `:tag`.
 The `delete` action is similar to a `get` request, but also destroys the blob.
 
 ```
-> blob = client.blobs.get(id: 1)
+> blob = client.blobs.get(id: 1) # Or other arguments as described under get
 => <#FlightCache::Models::Blob:...> # And deletes the blob
 ```
 
@@ -339,7 +449,10 @@ The container builder can be returned by:
 
 #### Getting a Container
 
-Getting a single container by `:id` is equivalent in syntax to getting a blob:
+Getting a single container by `:id` is equivalent in syntax to getting a blob.
+Containers can also be retrieved by `:tag` in a similarly blobs (without
+the `filename`). Once again the `:scope` defaults to "user" and `:admin` to false.
+These flags can be overridden in the same manner as a Blob.
 
 ```
 > ctr = client.containers.get(id: 1)
@@ -350,6 +463,12 @@ Getting a single container by `:id` is equivalent in syntax to getting a blob:
 }
 > ctr.class
 => FlightCache::Models::Container
+
+> client.containers.get(tag: <tag>)
+=> Returns the non admin tagged container in the user scope
+
+> client.containers.get(tag:, scope:, admin:)
+=> Returns the corresponding container in the same manner as blobs
 ```
 
 A container can also be fetched by using a `:tag` and optional `:scope`:
@@ -363,7 +482,8 @@ Gets the container by tag that belongs to:
 #### Listing Containers
 
 All the containers the user has access to is returned from `list`. This can
-be further filtered using the `:tag` option.
+be further filtered using the `:tag` option. The `:admin` option gives weather
+the admin or non admin containers should be returned.
 
 ```
 > client.containers.list
@@ -371,6 +491,9 @@ be further filtered using the `:tag` option.
 
 > client.containers.list(tag:)
 => [...] # Filters the Containers by tag
+
+> client.containers.list(admin: true)
+=> Returns the admin containers
 ```
 
 #### Uploading to a Container
@@ -398,5 +521,5 @@ Copyright (C) 2019-present Alces Flight Ltd.
 
 This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which is available at https://www.eclipse.org/legal/epl-2.0, or alternative license terms made available by Alces Flight Ltd - please direct inquiries about licensing to licensing@alces-flight.com.
 
-flight-cache-server is distributed in the hope that it will be useful, but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more details.
+flight_cache is distributed in the hope that it will be useful, but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more details.
 

@@ -23,7 +23,7 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
@@ -36,27 +36,22 @@ class FlightCache
         api_name 'containers'
         api_type 'container'
 
-        def get(id: nil, tag: nil, scope: nil)
-          build do |c|
-            if id
-              c.get(join(id))
+        def get(id: nil, tag: nil, scope: :user, admin: false)
+          build do |con|
+            path = if id
+              join(id)
             elsif tag
-              c.get(paths.tagged(tag, 'container'), scope: scope)
+              paths.bucket(scope, tag)
             else
-              raise BadRequestError, <<~ERROR.chomp
-                Please specify either the container :id or :tag
-              ERROR
-            end.body.data
+              raise BadRequestError
+            end
+            con.get(path, admin: admin).body.data
           end
         end
 
-        def list(tag: nil)
+        def list(tag: nil, scope: nil, admin: nil)
           build_enum do |con|
-            if tag
-              con.get(paths.tagged(tag)).body.data
-            else
-              con.get(join).body.data
-            end
+            con.get(join, scope: scope, admin: admin, tag: tag).body.data
           end
         end
       end
@@ -65,9 +60,10 @@ class FlightCache
       data_attribute :tag_name
       data_attribute :scope
       data_attribute :restricted
+      data_attribute :admin
 
-      def upload(*a)
-        builder.client.blobs.uploader(*a).to_container(id: self.id)
+      def upload(filename:, io:, title: nil, label: nil)
+        builder.client.blobs.upload(*a, container_id: id,)
       end
     end
   end

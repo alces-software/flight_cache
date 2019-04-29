@@ -23,7 +23,7 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
@@ -65,7 +65,8 @@ class FlightCache
     def connection
       Faraday::Connection.new(host) do |conn|
         conn.token_auth(token)
-        conn.request :json
+        conn.request :multipart
+        conn.request :url_encoded
 
         conn.use RaiseError
 

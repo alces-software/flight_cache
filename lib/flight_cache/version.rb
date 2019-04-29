@@ -23,10 +23,10 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
 
 class FlightCache
-  VERSION = '0.5.5'
+  VERSION = '0.6.0'
 end

@@ -23,14 +23,20 @@
 #
 #  https://opensource.org/licenses/EPL-2.0
 #
-# For more information on flight-account, please visit:
+# For more information on flight_cache, please visit:
 # https://github.com/alces-software/flight_cache
 #===============================================================================
+
+require 'uri'
 
 class FlightCache
   class PathHelper
     def tagged(tag_name, *parts)
       ["tagged", tag_name, *parts].join('/')
+    end
+
+    def bucket(scope, tag, *parts)
+      ['buckets', scope, tag, *parts].join('/')
     end
   end
 end
