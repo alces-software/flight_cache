@@ -73,7 +73,7 @@ class FlightCache
   # Use: The client could not make the request because of insufficient
   # arguments or another reason
   class BadRequestError < Error
-    MESSAGE = 'Insufficient arguments. See documentation for further detail'
+    MESSAGE = 'Insufficient arguments. See documentation for further details'
 
     def initialize(msg = MESSAGE)
       super
