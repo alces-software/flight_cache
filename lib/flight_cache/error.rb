@@ -44,6 +44,11 @@ class FlightCache
     end
   end
 
+  # BadRequestError
+  # Use: Their has been server side client error
+  # Code: 400
+  class BadRequestError < Error; end
+
   # UnauthorizedError
   # Use: Accessed denied due to failing authentication
   # Code: 401
